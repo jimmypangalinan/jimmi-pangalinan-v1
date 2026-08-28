@@ -4,10 +4,7 @@ export const profile = {
   roles: ["DevOps Engineer", "CI/CD Automation", "Cloud & Platform Engineer"],
   email: "pangalinan.jimmi@gmail.com",
   location: "Jakarta, Indonesia",
-  phone: "+62 857-7823-3885",
-  phoneHref: "tel:+6285778233885",
-  whatsapp: "https://wa.me/6285778233885",
-  cvRequestUrl:
+  contactRequestUrl:
     "https://script.google.com/macros/s/AKfycbysCYpkVgoNQafGYcVujtg_GHh_wct_ZC1QvpmoGEpsXnIqQxI9AzFSKa5YQi37ojT3Xg/exec",
   headlineLead: "DevOps Engineer",
   intro:

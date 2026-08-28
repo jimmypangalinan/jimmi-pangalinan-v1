@@ -1,5 +1,5 @@
-import { useState, type FormEvent } from "react";
-import { CheckCircle2, Download, LoaderCircle, Send } from "lucide-react";
+import { useState, type FormEvent, type ReactElement } from "react";
+import { CheckCircle2, LoaderCircle, Send } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -11,15 +11,42 @@ import {
 import { profile } from "@/lib/portfolio-data";
 
 const needOptions = [
-  "Rekrutmen / Hire",
-  "Kerja sama proyek / Freelance",
-  "Konsultasi DevOps, Cloud, atau CI/CD",
-  "Networking atau kebutuhan lainnya",
+  "Hiring / Recruitment",
+  "Project Collaboration / Freelance",
+  "DevOps, Cloud, or CI/CD Consulting",
+  "Networking / Other",
 ] as const;
 
+const dialogCopy = {
+  cv: {
+    eyebrow: "REQUEST MY CV",
+    title: "A quick introduction first",
+    description: "Tell me a little about yourself and I will send my CV directly to your email.",
+    submit: "Send CV to My Email",
+    successTitle: "CV sent successfully",
+    successMessage: "My CV has been sent to",
+  },
+  call: {
+    eyebrow: "REQUEST A CALL",
+    title: "Let’s start a conversation",
+    description:
+      "Share a few details about your inquiry. I will review your request and contact you by email.",
+    submit: "Submit Call Request",
+    successTitle: "Call request received",
+    successMessage: "Thank you. I will review your request and follow up at",
+  },
+} as const;
+
+type RequestType = keyof typeof dialogCopy;
 type RequestStatus = "idle" | "submitting" | "success" | "error";
 
-export function CvRequestDialog() {
+interface ContactRequestDialogProps {
+  requestType: RequestType;
+  children: ReactElement;
+}
+
+export function ContactRequestDialog({ requestType, children }: ContactRequestDialogProps) {
+  const copy = dialogCopy[requestType];
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<RequestStatus>("idle");
   const [message, setMessage] = useState("");
@@ -49,7 +76,7 @@ export function CvRequestDialog() {
     setMessage("");
 
     try {
-      const response = await fetch(profile.cvRequestUrl, {
+      const response = await fetch(profile.contactRequestUrl, {
         method: "POST",
         body,
         redirect: "follow",
@@ -57,18 +84,18 @@ export function CvRequestDialog() {
       const result = (await response.json()) as { ok?: boolean; message?: string };
 
       if (!response.ok || !result.ok) {
-        throw new Error(result.message || "CV belum dapat dikirim. Silakan coba kembali.");
+        throw new Error(result.message || "Your request could not be sent. Please try again.");
       }
 
       setSubmittedEmail(email);
-      setMessage(result.message || "CV berhasil dikirim.");
+      setMessage(result.message || "Your request was sent successfully.");
       setStatus("success");
       form.reset();
     } catch (error) {
       setMessage(
         error instanceof Error
           ? error.message
-          : "Terjadi kesalahan saat mengirim CV. Silakan coba kembali.",
+          : "Something went wrong while sending your request. Please try again.",
       );
       setStatus("error");
     }
@@ -76,12 +103,7 @@ export function CvRequestDialog() {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <button type="button" className="profile-card__download">
-          <Download aria-hidden="true" />
-          Download CV
-        </button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
 
       <DialogContent className="cv-request-dialog">
         {status === "success" ? (
@@ -89,57 +111,59 @@ export function CvRequestDialog() {
             <span className="cv-request__success-icon" aria-hidden="true">
               <CheckCircle2 />
             </span>
-            <DialogTitle>CV berhasil dikirim</DialogTitle>
+            <DialogTitle>{copy.successTitle}</DialogTitle>
             <DialogDescription>
-              {message} Kami mengirimkannya ke <strong>{submittedEmail}</strong>. Periksa juga
-              folder spam jika belum terlihat.
+              {copy.successMessage} <strong>{submittedEmail}</strong>.
+              {requestType === "cv" && " Please check your spam folder if it is not in your inbox."}
             </DialogDescription>
             <button type="button" onClick={() => handleOpenChange(false)}>
-              Selesai
+              Done
             </button>
           </div>
         ) : (
           <>
             <DialogHeader className="cv-request__header">
-              <span className="cv-request__eyebrow">REQUEST MY CV</span>
-              <DialogTitle className="cv-request__title">Mari saling mengenal dahulu</DialogTitle>
+              <span className="cv-request__eyebrow">{copy.eyebrow}</span>
+              <DialogTitle className="cv-request__title">{copy.title}</DialogTitle>
               <DialogDescription className="cv-request__description">
-                Isi data singkat berikut. CV akan langsung dikirim ke email Anda.
+                {copy.description}
               </DialogDescription>
             </DialogHeader>
 
             <form className="cv-request__form" onSubmit={handleSubmit}>
+              <input type="hidden" name="requestType" value={requestType} />
+
               <div className="cv-request__field">
-                <label htmlFor="cv-request-name">Nama lengkap</label>
+                <label htmlFor={`${requestType}-request-name`}>Full Name</label>
                 <input
-                  id="cv-request-name"
+                  id={`${requestType}-request-name`}
                   name="name"
                   type="text"
                   minLength={2}
                   maxLength={80}
                   autoComplete="name"
-                  placeholder="Nama Anda"
+                  placeholder="Your name"
                   required
                 />
               </div>
 
               <div className="cv-request__field">
-                <label htmlFor="cv-request-email">Email</label>
+                <label htmlFor={`${requestType}-request-email`}>Email Address</label>
                 <input
-                  id="cv-request-email"
+                  id={`${requestType}-request-email`}
                   name="email"
                   type="email"
                   autoComplete="email"
-                  placeholder="nama@perusahaan.com"
+                  placeholder="name@company.com"
                   required
                 />
               </div>
 
               <div className="cv-request__field">
-                <label htmlFor="cv-request-need">Kebutuhan</label>
-                <select id="cv-request-need" name="need" defaultValue="" required>
+                <label htmlFor={`${requestType}-request-need`}>Purpose</label>
+                <select id={`${requestType}-request-need`} name="need" defaultValue="" required>
                   <option value="" disabled>
-                    Pilih kebutuhan Anda
+                    Select your purpose
                   </option>
                   {needOptions.map((option) => (
                     <option key={option} value={option}>
@@ -150,9 +174,9 @@ export function CvRequestDialog() {
               </div>
 
               <div className="cv-request__honeypot" aria-hidden="true">
-                <label htmlFor="cv-request-website">Website</label>
+                <label htmlFor={`${requestType}-request-website`}>Website</label>
                 <input
-                  id="cv-request-website"
+                  id={`${requestType}-request-website`}
                   name="website"
                   type="text"
                   tabIndex={-1}
@@ -167,8 +191,8 @@ export function CvRequestDialog() {
               )}
 
               <p className="cv-request__privacy">
-                Data Anda hanya digunakan untuk mengirim CV dan menindaklanjuti kebutuhan yang
-                dipilih.
+                Your information will only be used to fulfill this request and follow up on the
+                purpose you selected.
               </p>
 
               <button
@@ -179,12 +203,12 @@ export function CvRequestDialog() {
                 {status === "submitting" ? (
                   <>
                     <LoaderCircle className="cv-request__spinner" aria-hidden="true" />
-                    Mengirim CV...
+                    Sending...
                   </>
                 ) : (
                   <>
                     <Send aria-hidden="true" />
-                    Kirim CV ke Email
+                    {copy.submit}
                   </>
                 )}
               </button>

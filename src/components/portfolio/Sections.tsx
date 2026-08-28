@@ -6,7 +6,7 @@ import {
   Boxes,
   Mail,
   MapPin,
-  Phone,
+  PhoneCall,
   Check,
   Quote,
 } from "lucide-react";
@@ -26,6 +26,7 @@ import {
   tools,
   works,
 } from "@/lib/portfolio-data";
+import { ContactRequestDialog } from "./ContactRequestDialog";
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return <h2 className="section-kicker">{children}</h2>;
@@ -219,16 +220,18 @@ export function ContactSection() {
             <ArrowUpRight className="contact-card__arrow" aria-hidden="true" />
           </a>
 
-          <a className="contact-card" href={profile.whatsapp} target="_blank" rel="noreferrer">
-            <span className="contact-card__icon">
-              <Phone aria-hidden="true" />
-            </span>
-            <span className="contact-card__copy">
-              <span className="contact-card__label">WhatsApp</span>
-              <span className="contact-card__value">{profile.phone}</span>
-            </span>
-            <ArrowUpRight className="contact-card__arrow" aria-hidden="true" />
-          </a>
+          <ContactRequestDialog requestType="call">
+            <button type="button" className="contact-card">
+              <span className="contact-card__icon">
+                <PhoneCall aria-hidden="true" />
+              </span>
+              <span className="contact-card__copy">
+                <span className="contact-card__label">Request a Call</span>
+                <span className="contact-card__value">Share your contact details</span>
+              </span>
+              <ArrowUpRight className="contact-card__arrow" aria-hidden="true" />
+            </button>
+          </ContactRequestDialog>
         </div>
 
         <div className="contact-card contact-card--location">
@@ -264,14 +267,14 @@ export function ContactSection() {
           >
             Send Message <ArrowUpRight className="size-4" />
           </a>
-          <a
-            href={profile.whatsapp}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-full border border-border px-6 py-3 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-primary"
-          >
-            WhatsApp <Phone className="size-4" />
-          </a>
+          <ContactRequestDialog requestType="call">
+            <button
+              type="button"
+              className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-border px-6 py-3 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+            >
+              Request a Call <PhoneCall className="size-4" />
+            </button>
+          </ContactRequestDialog>
         </div>
       </div>
     </section>
