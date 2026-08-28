@@ -1,12 +1,12 @@
-import { Download, Github, Linkedin, Mail, Menu, Twitter } from "lucide-react";
+import { Download, Github, Instagram, Linkedin, Mail, Menu, Youtube } from "lucide-react";
 import { profile } from "@/lib/portfolio-data";
 import { ThemeToggle } from "./ThemeToggle";
 
 const icons: Record<string, typeof Github> = {
   LinkedIn: Linkedin,
   GitHub: Github,
-  X: Twitter,
-  Email: Mail,
+  Instagram,
+  YouTube: Youtube,
 };
 
 export function ProfileCard() {

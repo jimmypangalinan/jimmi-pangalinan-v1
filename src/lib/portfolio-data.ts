@@ -14,8 +14,8 @@ export const profile = {
   socials: [
     { label: "LinkedIn", href: "https://www.linkedin.com/in/jimmipangalinan/" },
     { label: "GitHub", href: "https://github.com/jimmypangalinan" },
-    { label: "X", href: "https://x.com/JimmiPangg" },
-    { label: "Email", href: "mailto:pangalinan.jimmi@gmail.com" },
+    { label: "Instagram", href: "https://www.instagram.com/jimmipangalinan/" },
+    { label: "YouTube", href: "https://www.youtube.com/@jimmipang" },
   ],
 };
 
