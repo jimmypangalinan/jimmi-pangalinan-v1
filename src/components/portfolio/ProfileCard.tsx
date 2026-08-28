@@ -1,5 +1,6 @@
-import { Download, Github, Instagram, Linkedin, Mail, Menu, Youtube } from "lucide-react";
+import { Github, Instagram, Linkedin, Mail, Menu, Youtube } from "lucide-react";
 import { profile } from "@/lib/portfolio-data";
+import { CvRequestDialog } from "./CvRequestDialog";
 import { ThemeToggle } from "./ThemeToggle";
 
 const icons: Record<string, typeof Github> = {
@@ -66,10 +67,7 @@ export function ProfileCard() {
         })}
       </div>
 
-      <a href={profile.cvUrl} target="_blank" rel="noreferrer" className="profile-card__download">
-        <Download aria-hidden="true" />
-        Download CV
-      </a>
+      <CvRequestDialog />
     </aside>
   );
 }

@@ -394,6 +394,8 @@
   border-radius: 10px;
   background: var(--primary);
   color: var(--primary-foreground);
+  cursor: pointer;
+  font-family: var(--font-sans);
   font-size: 16px;
   font-weight: 500;
   text-decoration: none;
@@ -410,6 +412,223 @@
 .profile-card__download svg {
   width: 18px;
   height: 18px;
+}
+
+.cv-request-dialog {
+  width: min(520px, calc(100vw - 32px));
+  max-width: 520px;
+  max-height: min(90vh, 720px);
+  gap: 0;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--surface);
+  color: var(--foreground);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.48);
+  padding: 34px;
+}
+
+.cv-request-dialog > button {
+  color: var(--muted-foreground);
+}
+
+.cv-request__header {
+  gap: 0;
+  padding-right: 28px;
+  text-align: left;
+}
+
+.cv-request__eyebrow {
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+}
+
+.cv-request__title {
+  margin-top: 10px;
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 1.25;
+}
+
+.cv-request__description {
+  margin-top: 10px;
+  color: var(--muted-foreground);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.cv-request__form {
+  display: grid;
+  gap: 17px;
+  margin-top: 25px;
+}
+
+.cv-request__field {
+  display: grid;
+  gap: 8px;
+}
+
+.cv-request__field label {
+  color: var(--foreground);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.cv-request__field input,
+.cv-request__field select {
+  width: 100%;
+  height: 48px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  outline: 0;
+  background: var(--surface-2);
+  color: var(--foreground);
+  padding: 0 14px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.cv-request__field input::placeholder {
+  color: var(--muted-foreground);
+  opacity: 0.75;
+}
+
+.cv-request__field input:focus,
+.cv-request__field select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--accent);
+}
+
+.cv-request__field option {
+  background: var(--surface-2);
+  color: var(--foreground);
+}
+
+.cv-request__honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.cv-request__error {
+  margin: -3px 0 0;
+  border: 1px solid rgba(220, 85, 79, 0.38);
+  border-radius: 10px;
+  background: rgba(220, 85, 79, 0.1);
+  color: var(--destructive);
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.cv-request__privacy {
+  margin: -1px 0 0;
+  color: var(--muted-foreground);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.cv-request__submit,
+.cv-request__success button {
+  width: 100%;
+  height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px solid var(--primary);
+  border-radius: 11px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  transition:
+    filter 160ms ease,
+    transform 160ms ease;
+}
+
+.cv-request__submit:hover:not(:disabled),
+.cv-request__success button:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.cv-request__submit:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.cv-request__submit svg {
+  width: 17px;
+  height: 17px;
+}
+
+.cv-request__spinner {
+  animation: cv-request-spin 800ms linear infinite;
+}
+
+.cv-request__success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 22px 4px 4px;
+  text-align: center;
+}
+
+.cv-request__success-icon {
+  width: 66px;
+  height: 66px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--primary);
+}
+
+.cv-request__success-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.cv-request__success h2 {
+  margin-top: 20px;
+  font-family: var(--font-display);
+  font-size: 26px;
+}
+
+.cv-request__success p {
+  max-width: 390px;
+  margin-top: 12px;
+  color: var(--muted-foreground);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.cv-request__success strong {
+  color: var(--foreground);
+  overflow-wrap: anywhere;
+}
+
+.cv-request__success button {
+  margin-top: 26px;
+}
+
+@keyframes cv-request-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .portfolio-main {
@@ -850,6 +1069,21 @@ a.contact-card:hover {
 
   .profile-card__identity h2 {
     font-size: 25px;
+  }
+
+  .cv-request-dialog {
+    width: calc(100vw - 24px);
+    max-height: calc(100vh - 24px);
+    border-radius: 20px;
+    padding: 26px 20px;
+  }
+
+  .cv-request__title {
+    font-size: 24px;
+  }
+
+  .cv-request__form {
+    margin-top: 21px;
   }
 
   .portfolio-navigation button {

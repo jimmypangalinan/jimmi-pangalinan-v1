@@ -7,7 +7,8 @@ export const profile = {
   phone: "+62 857-7823-3885",
   phoneHref: "tel:+6285778233885",
   whatsapp: "https://wa.me/6285778233885",
-  cvUrl: "https://drive.google.com/file/d/1ua8avstcLSnwym6ap1s8j03y4TkPi4Dz/view?usp=sharing",
+  cvRequestUrl:
+    "https://script.google.com/macros/s/AKfycbysCYpkVgoNQafGYcVujtg_GHh_wct_ZC1QvpmoGEpsXnIqQxI9AzFSKa5YQi37ojT3Xg/exec",
   headlineLead: "DevOps Engineer",
   intro:
     "Highly motivated DevOps Engineer experienced in implementing automated CI/CD pipelines to improve deployment speed and reliability. Skilled in development, scripting, version control, and monitoring. Completed CCNAv7 at Cisco Academy, AWS re/Start at Orbit Academy, and certified as an AWS Certified Cloud Practitioner.",
