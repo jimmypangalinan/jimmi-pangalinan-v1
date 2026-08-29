@@ -500,6 +500,12 @@
   opacity: 0.75;
 }
 
+.cv-request__field-hint {
+  color: var(--muted-foreground);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
 .cv-request__field input:focus,
 .cv-request__field select:focus {
   border-color: var(--primary);

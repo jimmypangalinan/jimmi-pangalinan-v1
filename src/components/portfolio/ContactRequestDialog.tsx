@@ -30,10 +30,10 @@ const dialogCopy = {
     eyebrow: "REQUEST A CALL",
     title: "Let’s start a conversation",
     description:
-      "Share a few details about your inquiry. I will review your request and contact you by email.",
+      "Share your contact details and a little about your inquiry. I will review your request and contact you directly.",
     submit: "Submit Call Request",
     successTitle: "Call request received",
-    successMessage: "Thank you. I will review your request and follow up at",
+    successMessage: "Thank you. I will review your request and contact you at",
   },
 } as const;
 
@@ -50,7 +50,7 @@ export function ContactRequestDialog({ requestType, children }: ContactRequestDi
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<RequestStatus>("idle");
   const [message, setMessage] = useState("");
-  const [submittedEmail, setSubmittedEmail] = useState("");
+  const [submittedContact, setSubmittedContact] = useState("");
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen && status === "submitting") return;
@@ -59,7 +59,7 @@ export function ContactRequestDialog({ requestType, children }: ContactRequestDi
     if (!nextOpen) {
       setStatus("idle");
       setMessage("");
-      setSubmittedEmail("");
+      setSubmittedContact("");
     }
   };
 
@@ -69,6 +69,7 @@ export function ContactRequestDialog({ requestType, children }: ContactRequestDi
     const form = event.currentTarget;
     const formData = new FormData(form);
     const email = String(formData.get("email") ?? "").trim();
+    const phone = String(formData.get("phone") ?? "").trim();
     const body = new URLSearchParams();
 
     formData.forEach((value, key) => body.append(key, String(value)));
@@ -87,7 +88,7 @@ export function ContactRequestDialog({ requestType, children }: ContactRequestDi
         throw new Error(result.message || "Your request could not be sent. Please try again.");
       }
 
-      setSubmittedEmail(email);
+      setSubmittedContact(requestType === "call" ? phone : email);
       setMessage(result.message || "Your request was sent successfully.");
       setStatus("success");
       form.reset();
@@ -113,7 +114,7 @@ export function ContactRequestDialog({ requestType, children }: ContactRequestDi
             </span>
             <DialogTitle>{copy.successTitle}</DialogTitle>
             <DialogDescription>
-              {copy.successMessage} <strong>{submittedEmail}</strong>.
+              {copy.successMessage} <strong>{submittedContact}</strong>.
               {requestType === "cv" && " Please check your spam folder if it is not in your inbox."}
             </DialogDescription>
             <button type="button" onClick={() => handleOpenChange(false)}>
@@ -158,6 +159,28 @@ export function ContactRequestDialog({ requestType, children }: ContactRequestDi
                   required
                 />
               </div>
+
+              {requestType === "call" && (
+                <div className="cv-request__field">
+                  <label htmlFor="call-request-phone">Phone / WhatsApp Number</label>
+                  <input
+                    id="call-request-phone"
+                    name="phone"
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    minLength={8}
+                    maxLength={20}
+                    pattern="[+0-9][0-9 .()\u002D]{7,19}"
+                    placeholder="+62 812 3456 7890"
+                    aria-describedby="call-request-phone-hint"
+                    required
+                  />
+                  <span id="call-request-phone-hint" className="cv-request__field-hint">
+                    Include the country code so I can contact you directly.
+                  </span>
+                </div>
+              )}
 
               <div className="cv-request__field">
                 <label htmlFor={`${requestType}-request-need`}>Purpose</label>
