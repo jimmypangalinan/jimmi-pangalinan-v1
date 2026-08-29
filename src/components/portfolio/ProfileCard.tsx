@@ -1,4 +1,13 @@
-import { Download, Github, Instagram, Linkedin, Mail, Menu, Youtube } from "lucide-react";
+import {
+  Download,
+  Github,
+  Instagram,
+  Linkedin,
+  Mail,
+  Menu,
+  PhoneCall,
+  Youtube,
+} from "lucide-react";
 import { profile } from "@/lib/portfolio-data";
 import { ContactRequestDialog } from "./ContactRequestDialog";
 import { ThemeToggle } from "./ThemeToggle";
@@ -67,12 +76,21 @@ export function ProfileCard() {
         })}
       </div>
 
-      <ContactRequestDialog requestType="cv">
-        <button type="button" className="profile-card__download">
-          <Download aria-hidden="true" />
-          Download CV
-        </button>
-      </ContactRequestDialog>
+      <div className="profile-card__actions">
+        <ContactRequestDialog requestType="call">
+          <button type="button" className="profile-card__call">
+            <PhoneCall aria-hidden="true" />
+            Request a Call
+          </button>
+        </ContactRequestDialog>
+
+        <ContactRequestDialog requestType="cv">
+          <button type="button" className="profile-card__download">
+            <Download aria-hidden="true" />
+            Download CV
+          </button>
+        </ContactRequestDialog>
+      </div>
     </aside>
   );
 }

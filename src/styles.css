@@ -382,10 +382,51 @@
   height: 15px;
 }
 
+.profile-card__actions {
+  width: 100%;
+  margin-top: auto;
+  display: grid;
+  gap: 10px;
+}
+
+.profile-card__call {
+  width: 100%;
+  height: 47px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--foreground);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.profile-card__call:hover {
+  border-color: var(--primary);
+  background: var(--accent);
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.profile-card__call svg {
+  width: 17px;
+  height: 17px;
+}
+
 .profile-card__download {
   width: 100%;
   height: 51px;
-  margin-top: auto;
+  margin-top: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
