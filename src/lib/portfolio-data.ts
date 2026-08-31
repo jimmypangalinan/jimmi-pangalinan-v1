@@ -1,7 +1,7 @@
 export const profile = {
   name: "Jimmi Pangalinan",
   role: "DevOps Engineer",
-  roles: ["DevOps Engineer", "CI/CD Automation", "Cloud & Platform Engineer"],
+  roles: ["DevOps Engineer", "DevSecOps Engineer", "AI Software Developer"],
   email: "pangalinan.jimmi@gmail.com",
   location: "Jakarta, Indonesia",
   contactRequestUrl:

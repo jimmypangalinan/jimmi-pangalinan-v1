@@ -314,20 +314,90 @@
 }
 
 .profile-card__photo {
+  position: relative;
   width: 320px;
   height: 280px;
   margin-top: 24px;
   overflow: hidden;
   border-radius: 20px;
   background: var(--surface-2);
+  isolation: isolate;
 }
 
 .profile-card__photo img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   display: block;
   object-fit: cover;
   object-position: center 38%;
+}
+
+.profile-card__photo-base {
+  z-index: 0;
+  transition:
+    filter 220ms ease,
+    transform 600ms ease;
+}
+
+.profile-card__photo:hover .profile-card__photo-base {
+  filter: contrast(1.06) saturate(1.08);
+  transform: scale(1.015);
+}
+
+.profile-card__photo-glitch {
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.profile-card__photo-glitch--one {
+  animation: profile-glitch-one 4.2s steps(1, end) infinite;
+}
+
+.profile-card__photo-glitch--two {
+  animation: profile-glitch-two 5.1s steps(1, end) infinite;
+}
+
+.profile-card__photo::before {
+  position: absolute;
+  top: 12px;
+  left: 13px;
+  z-index: 3;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(9, 10, 13, 0.54);
+  color: rgba(255, 255, 255, 0.66);
+  content: "SYSTEM // ONLINE";
+  padding: 4px 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 7px;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  backdrop-filter: blur(6px);
+}
+
+.profile-card__photo::after {
+  position: absolute;
+  inset: -100% 0 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(transparent 48%, rgba(166, 43, 70, 0.18) 50%, transparent 52%),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 3px,
+      rgba(255, 255, 255, 0.035) 4px
+    );
+  background-size:
+    100% 50%,
+    100% 4px;
+  content: "";
+  mix-blend-mode: screen;
+  opacity: 0.75;
+  animation: profile-scan 4.8s linear infinite;
 }
 
 .profile-card__identity {
@@ -343,11 +413,110 @@
 }
 
 .profile-card__identity p {
+  min-height: 18px;
   margin: 8px 0 0;
   color: var(--muted-foreground);
-  font-size: 12px;
-  letter-spacing: 0.2em;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  line-height: 1.5;
+  white-space: nowrap;
   text-transform: uppercase;
+}
+
+.profile-card__role-cursor {
+  display: inline-block;
+  margin-left: 3px;
+  color: var(--primary);
+  animation: role-cursor-blink 760ms steps(1, end) infinite;
+}
+
+@keyframes profile-glitch-one {
+  0%,
+  7%,
+  9.5%,
+  31%,
+  33%,
+  68%,
+  70%,
+  100% {
+    clip-path: inset(0 0 100% 0);
+    opacity: 0;
+    transform: translate(0);
+  }
+  7.2% {
+    clip-path: inset(17% 0 62% 0);
+    opacity: 0.82;
+    transform: translate(9px, -2px);
+    filter: saturate(1.35) drop-shadow(-6px 0 rgba(0, 225, 255, 0.7));
+  }
+  8.1% {
+    clip-path: inset(54% 0 30% 0);
+    opacity: 0.72;
+    transform: translate(-7px, 2px);
+    filter: saturate(1.25) drop-shadow(6px 0 rgba(215, 37, 92, 0.72));
+  }
+  31.2% {
+    clip-path: inset(36% 0 51% 0);
+    opacity: 0.76;
+    transform: translate(-10px, 1px);
+    filter: hue-rotate(22deg) drop-shadow(7px 0 rgba(0, 225, 255, 0.62));
+  }
+  68.2% {
+    clip-path: inset(71% 0 17% 0);
+    opacity: 0.7;
+    transform: translate(8px, -1px);
+    filter: contrast(1.25) drop-shadow(-7px 0 rgba(215, 37, 92, 0.62));
+  }
+}
+
+@keyframes profile-glitch-two {
+  0%,
+  18%,
+  20%,
+  46%,
+  48%,
+  83%,
+  85%,
+  100% {
+    clip-path: inset(100% 0 0 0);
+    opacity: 0;
+    transform: translate(0);
+  }
+  18.2% {
+    clip-path: inset(29% 0 54% 0);
+    opacity: 0.7;
+    transform: translate(-8px, 1px);
+    filter: hue-rotate(-18deg) drop-shadow(6px 0 rgba(215, 37, 92, 0.7));
+  }
+  46.2% {
+    clip-path: inset(62% 0 25% 0);
+    opacity: 0.78;
+    transform: translate(11px, -2px);
+    filter: saturate(1.45) drop-shadow(-7px 0 rgba(0, 225, 255, 0.62));
+  }
+  83.2% {
+    clip-path: inset(11% 0 77% 0);
+    opacity: 0.68;
+    transform: translate(-9px, 2px);
+    filter: contrast(1.25) drop-shadow(7px 0 rgba(215, 37, 92, 0.66));
+  }
+}
+
+@keyframes profile-scan {
+  to {
+    transform: translateY(66.666%);
+  }
+}
+
+@keyframes role-cursor-blink {
+  0%,
+  48% {
+    opacity: 1;
+  }
+  49%,
+  100% {
+    opacity: 0;
+  }
 }
 
 .profile-card__socials {
@@ -1603,5 +1772,15 @@ button.contact-card:hover {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .profile-card__photo-glitch,
+  .profile-card__photo::after,
+  .profile-card__role-cursor {
+    animation: none !important;
+  }
+
+  .profile-card__photo-glitch {
+    opacity: 0 !important;
   }
 }

@@ -8,6 +8,7 @@ import {
   PhoneCall,
   Youtube,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { profile } from "@/lib/portfolio-data";
 import { ContactRequestDialog } from "./ContactRequestDialog";
 import { ThemeToggle } from "./ThemeToggle";
@@ -20,6 +21,52 @@ const icons: Record<string, typeof Github> = {
 };
 
 export function ProfileCard() {
+  const [roleIndex, setRoleIndex] = useState(0);
+  const [typedRole, setTypedRole] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updateMotionPreference = () => setPrefersReducedMotion(motionPreference.matches);
+
+    updateMotionPreference();
+    motionPreference.addEventListener("change", updateMotionPreference);
+    return () => motionPreference.removeEventListener("change", updateMotionPreference);
+  }, []);
+
+  useEffect(() => {
+    const currentRole = profile.roles[roleIndex] ?? profile.role;
+
+    if (prefersReducedMotion) {
+      setTypedRole(currentRole);
+      return;
+    }
+
+    const isComplete = typedRole === currentRole;
+    const isEmpty = typedRole.length === 0;
+    const delay =
+      isComplete && !isDeleting ? 1700 : isEmpty && isDeleting ? 320 : isDeleting ? 42 : 78;
+
+    const timeout = window.setTimeout(() => {
+      if (isComplete && !isDeleting) {
+        setIsDeleting(true);
+        return;
+      }
+
+      if (isEmpty && isDeleting) {
+        setIsDeleting(false);
+        setRoleIndex((index) => (index + 1) % profile.roles.length);
+        return;
+      }
+
+      const nextLength = typedRole.length + (isDeleting ? -1 : 1);
+      setTypedRole(currentRole.slice(0, nextLength));
+    }, delay);
+
+    return () => window.clearTimeout(timeout);
+  }, [isDeleting, prefersReducedMotion, roleIndex, typedRole]);
+
   const showNavigation = () => {
     const navigation = document.getElementById("portfolio-navigation");
     if (window.matchMedia("(max-width: 1040px)").matches) {
@@ -49,13 +96,33 @@ export function ProfileCard() {
       </div>
 
       <div className="profile-card__photo">
-        <img src="/jimmi.png" alt={`${profile.name}, ${profile.role}`} loading="eager" />
+        <img
+          className="profile-card__photo-base"
+          src="/jimmi.png"
+          alt={`${profile.name}, ${profile.role}`}
+          loading="eager"
+        />
+        <img
+          className="profile-card__photo-glitch profile-card__photo-glitch--one"
+          src="/jimmi.png"
+          alt=""
+          aria-hidden="true"
+        />
+        <img
+          className="profile-card__photo-glitch profile-card__photo-glitch--two"
+          src="/jimmi.png"
+          alt=""
+          aria-hidden="true"
+        />
       </div>
 
       <div className="profile-card__identity">
         <h2>{profile.name}</h2>
-        <p>
-          {profile.role} <span aria-hidden="true">—</span>
+        <p aria-label={`Roles: ${profile.roles.join(", ")}`}>
+          <span aria-hidden="true">{typedRole}</span>
+          <span className="profile-card__role-cursor" aria-hidden="true">
+            _
+          </span>
         </p>
       </div>
 
