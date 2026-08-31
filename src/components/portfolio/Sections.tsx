@@ -1,4 +1,5 @@
 import {
+  Activity,
   ArrowUpRight,
   GitBranch,
   Cloud,
@@ -10,6 +11,7 @@ import {
   Check,
   Quote,
 } from "lucide-react";
+import { useState } from "react";
 import {
   certifications,
   clients,
@@ -32,9 +34,25 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   return <h2 className="section-kicker">{children}</h2>;
 }
 
+function SectionHeader({ title, children }: { title: string; children?: React.ReactNode }) {
+  return (
+    <header className="section-heading-block">
+      <div className="section-heading">
+        <h2 className="section-heading__title">
+          <span>{title.charAt(0)}</span>
+          {title.slice(1).toUpperCase()}
+        </h2>
+        {children}
+      </div>
+      <div className="section-heading__divider" />
+    </header>
+  );
+}
+
 export function AboutSection() {
   return (
     <section className="portfolio-section hero-section animate-rise">
+      <SectionHeader title="About" />
       <p className="hero-eyebrow">
         Hello, I&apos;m <span>{profile.name}</span>
       </p>
@@ -57,23 +75,98 @@ export function AboutSection() {
 }
 
 export function WorksSection() {
+  const workFilters = ["All", "CI/CD", "Cloud", "Kubernetes", "DevSecOps", "Observability"];
+  const [activeFilter, setActiveFilter] = useState("All");
+  const visibleWorks =
+    activeFilter === "All" ? works : works.filter((work) => work.category === activeFilter);
+
+  const workVisualIcons: Record<string, typeof GitBranch> = {
+    pipeline: GitBranch,
+    cloud: Cloud,
+    kubernetes: Boxes,
+    security: ShieldCheck,
+    observability: Activity,
+  };
+
   return (
-    <section className="portfolio-section animate-rise">
-      <SectionTitle>Works</SectionTitle>
-      <div className="grid gap-4 sm:grid-cols-2">
-        {works.map((w) => (
-          <article
-            key={w.title}
-            className="group rounded-2xl border border-border bg-surface-2/60 p-6 transition-colors hover:border-primary/50"
-          >
-            <span className="text-xs uppercase tracking-widest text-primary">{w.tag}</span>
-            <h3 className="mt-3 flex items-start justify-between gap-3 text-lg font-medium">
-              {w.title}
-              <ArrowUpRight className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:text-primary" />
-            </h3>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{w.body}</p>
-          </article>
-        ))}
+    <section className="portfolio-section works-showcase animate-rise">
+      <SectionHeader title="Works">
+        <div className="works-filters" role="toolbar" aria-label="Filter DevOps projects">
+          {workFilters.map((filter) => (
+            <button
+              key={filter}
+              type="button"
+              onClick={() => setActiveFilter(filter)}
+              className={activeFilter === filter ? "is-active" : undefined}
+              aria-pressed={activeFilter === filter}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
+      </SectionHeader>
+
+      <p className="sr-only" aria-live="polite">
+        Showing {visibleWorks.length} {activeFilter === "All" ? "DevOps" : activeFilter} projects
+      </p>
+
+      <div className="works-grid">
+        {visibleWorks.map((work) => {
+          const VisualIcon = workVisualIcons[work.visual] ?? GitBranch;
+
+          return (
+            <article key={work.title} className="work-card">
+              <div className={`work-card__visual work-card__visual--${work.visual}`}>
+                <div className="work-visual__glow" />
+                <div className="work-visual__window">
+                  <div className="work-visual__bar">
+                    <span className="work-visual__lights" aria-hidden="true">
+                      <i />
+                      <i />
+                      <i />
+                    </span>
+                    <span>{work.console}</span>
+                  </div>
+                  <div className="work-visual__summary">
+                    <span className="work-visual__icon">
+                      <VisualIcon aria-hidden="true" />
+                    </span>
+                    <span>
+                      <small>Environment</small>
+                      <strong>Production</strong>
+                    </span>
+                  </div>
+                  <div className="work-visual__stages">
+                    {work.stages.map((stage, index) => (
+                      <span key={stage}>
+                        <i>{String(index + 1).padStart(2, "0")}</i>
+                        {stage}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="work-visual__status">
+                    <span aria-hidden="true" />
+                    {work.status}
+                  </div>
+                </div>
+              </div>
+
+              <div className="work-card__tags" aria-label="Project technologies">
+                {work.tags.map((tag) => (
+                  <span key={tag}>{tag}</span>
+                ))}
+              </div>
+
+              <div className="work-card__heading">
+                <h3>{work.title}</h3>
+                <span className="work-card__arrow" aria-hidden="true">
+                  <ArrowUpRight />
+                </span>
+              </div>
+              <p>{work.body}</p>
+            </article>
+          );
+        })}
       </div>
     </section>
   );
@@ -84,7 +177,7 @@ const serviceIcons = [GitBranch, Cloud, ShieldCheck, Boxes];
 export function ServicesSection() {
   return (
     <section className="portfolio-section animate-rise">
-      <SectionTitle>Services</SectionTitle>
+      <SectionHeader title="Services" />
       <div className="grid gap-4 sm:grid-cols-2">
         {services.map((s, i) => {
           const Icon = serviceIcons[i % serviceIcons.length]!;
@@ -110,6 +203,7 @@ export function ResumeSection() {
   return (
     <section className="portfolio-section animate-rise space-y-14">
       <div>
+        <SectionHeader title="Resume" />
         <SectionTitle>Experience</SectionTitle>
         <ol className="space-y-8 border-l border-border pl-6">
           {experience.map((e) => (
@@ -161,7 +255,8 @@ export function SkillsSection() {
   return (
     <section className="portfolio-section animate-rise space-y-14">
       <div>
-        <SectionTitle>Skills</SectionTitle>
+        <SectionHeader title="Skills" />
+        <SectionTitle>Core Skills</SectionTitle>
         <div className="grid gap-5 sm:grid-cols-2">
           {coreSkills.map((s) => (
             <Bar key={s.name} {...s} />
@@ -206,7 +301,7 @@ export function SkillsSection() {
 export function ContactSection() {
   return (
     <section className="portfolio-section animate-rise">
-      <SectionTitle>Contact</SectionTitle>
+      <SectionHeader title="Contact" />
       <div className="contact-list">
         <div className="contact-list__primary">
           <a className="contact-card" href={`mailto:${profile.email}`}>
@@ -371,7 +466,7 @@ export function PricingSection() {
 export function BlogSection() {
   return (
     <section className="portfolio-section animate-rise">
-      <SectionTitle>Blog</SectionTitle>
+      <SectionHeader title="Blog" />
       <div className="grid gap-4 sm:grid-cols-2">
         {posts.map((p) => (
           <article
