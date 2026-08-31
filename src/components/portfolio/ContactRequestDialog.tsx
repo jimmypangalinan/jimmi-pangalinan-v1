@@ -35,6 +35,15 @@ const dialogCopy = {
     successTitle: "Call request received",
     successMessage: "Thank you. I will review your request and contact you at",
   },
+  proposal: {
+    eyebrow: "REQUEST A PROPOSAL",
+    title: "Tell me about your project",
+    description:
+      "Share a few contact details and a short project brief. I will review it and follow up with you directly.",
+    submit: "Send Proposal Request",
+    successTitle: "Proposal request received",
+    successMessage: "Thank you. I will review your project and contact you at",
+  },
 } as const;
 
 type RequestType = keyof typeof dialogCopy;
@@ -42,11 +51,17 @@ type RequestStatus = "idle" | "submitting" | "success" | "error";
 
 interface ContactRequestDialogProps {
   requestType: RequestType;
+  service?: string;
   children: ReactElement;
 }
 
-export function ContactRequestDialog({ requestType, children }: ContactRequestDialogProps) {
+export function ContactRequestDialog({
+  requestType,
+  service,
+  children,
+}: ContactRequestDialogProps) {
   const copy = dialogCopy[requestType];
+  const isProposal = requestType === "proposal";
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<RequestStatus>("idle");
   const [message, setMessage] = useState("");
@@ -72,6 +87,25 @@ export function ContactRequestDialog({ requestType, children }: ContactRequestDi
     const phone = String(formData.get("phone") ?? "").trim();
     const body = new URLSearchParams();
 
+    if (isProposal) {
+      const company = String(formData.get("company") ?? "").trim();
+      const projectDescription = String(formData.get("projectDescription") ?? "").trim();
+      const selectedService = service ?? String(formData.get("service") ?? "").trim();
+
+      formData.set("requestType", "call");
+      formData.set(
+        "need",
+        [
+          "Proposal Request",
+          `Service: ${selectedService}`,
+          company && `Company: ${company}`,
+          `Project: ${projectDescription}`,
+        ]
+          .filter(Boolean)
+          .join("\n"),
+      );
+    }
+
     formData.forEach((value, key) => body.append(key, String(value)));
     setStatus("submitting");
     setMessage("");
@@ -88,7 +122,7 @@ export function ContactRequestDialog({ requestType, children }: ContactRequestDi
         throw new Error(result.message || "Your request could not be sent. Please try again.");
       }
 
-      setSubmittedContact(requestType === "call" ? phone : email);
+      setSubmittedContact(requestType === "cv" ? email : phone);
       setMessage(result.message || "Your request was sent successfully.");
       setStatus("success");
       form.reset();
@@ -101,6 +135,28 @@ export function ContactRequestDialog({ requestType, children }: ContactRequestDi
       setStatus("error");
     }
   };
+
+  const phoneField = (
+    <div className="cv-request__field">
+      <label htmlFor={`${requestType}-request-phone`}>Phone / WhatsApp Number</label>
+      <input
+        id={`${requestType}-request-phone`}
+        name="phone"
+        type="tel"
+        inputMode="tel"
+        autoComplete="tel"
+        minLength={8}
+        maxLength={20}
+        pattern="[+0-9][0-9 .()\u002D]{7,19}"
+        placeholder="+62 812 3456 7890"
+        aria-describedby={`${requestType}-request-phone-hint`}
+        required
+      />
+      <span id={`${requestType}-request-phone-hint`} className="cv-request__field-hint">
+        Include the country code so I can contact you directly.
+      </span>
+    </div>
+  );
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -134,67 +190,94 @@ export function ContactRequestDialog({ requestType, children }: ContactRequestDi
             <form className="cv-request__form" onSubmit={handleSubmit}>
               <input type="hidden" name="requestType" value={requestType} />
 
-              <div className="cv-request__field">
-                <label htmlFor={`${requestType}-request-name`}>Full Name</label>
-                <input
-                  id={`${requestType}-request-name`}
-                  name="name"
-                  type="text"
-                  minLength={2}
-                  maxLength={80}
-                  autoComplete="name"
-                  placeholder="Your name"
-                  required
-                />
-              </div>
-
-              <div className="cv-request__field">
-                <label htmlFor={`${requestType}-request-email`}>Email Address</label>
-                <input
-                  id={`${requestType}-request-email`}
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="name@company.com"
-                  required
-                />
-              </div>
-
-              {requestType === "call" && (
+              <div className="cv-request__row">
                 <div className="cv-request__field">
-                  <label htmlFor="call-request-phone">Phone / WhatsApp Number</label>
+                  <label htmlFor={`${requestType}-request-name`}>Full Name</label>
                   <input
-                    id="call-request-phone"
-                    name="phone"
-                    type="tel"
-                    inputMode="tel"
-                    autoComplete="tel"
-                    minLength={8}
-                    maxLength={20}
-                    pattern="[+0-9][0-9 .()\u002D]{7,19}"
-                    placeholder="+62 812 3456 7890"
-                    aria-describedby="call-request-phone-hint"
+                    id={`${requestType}-request-name`}
+                    name="name"
+                    type="text"
+                    minLength={2}
+                    maxLength={80}
+                    autoComplete="name"
+                    placeholder="Your name"
                     required
                   />
-                  <span id="call-request-phone-hint" className="cv-request__field-hint">
-                    Include the country code so I can contact you directly.
-                  </span>
                 </div>
+
+                <div className="cv-request__field">
+                  <label htmlFor={`${requestType}-request-email`}>Email Address</label>
+                  <input
+                    id={`${requestType}-request-email`}
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="name@company.com"
+                    required
+                  />
+                </div>
+              </div>
+
+              {isProposal ? (
+                <div className="cv-request__row">
+                  {phoneField}
+                  <div className="cv-request__field">
+                    <label htmlFor="proposal-request-company">Company (Optional)</label>
+                    <input
+                      id="proposal-request-company"
+                      name="company"
+                      type="text"
+                      maxLength={100}
+                      autoComplete="organization"
+                      placeholder="Company name"
+                    />
+                  </div>
+                </div>
+              ) : (
+                requestType === "call" && phoneField
               )}
 
-              <div className="cv-request__field">
-                <label htmlFor={`${requestType}-request-need`}>Purpose</label>
-                <select id={`${requestType}-request-need`} name="need" defaultValue="" required>
-                  <option value="" disabled>
-                    Select your purpose
-                  </option>
-                  {needOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
+              {isProposal ? (
+                <>
+                  <div className="cv-request__field">
+                    <label htmlFor="proposal-request-service">Selected Service</label>
+                    <input
+                      id="proposal-request-service"
+                      name="service"
+                      type="text"
+                      value={service ?? ""}
+                      readOnly
+                    />
+                  </div>
+
+                  <div className="cv-request__field">
+                    <label htmlFor="proposal-request-description">Project Description</label>
+                    <textarea
+                      id="proposal-request-description"
+                      name="projectDescription"
+                      minLength={20}
+                      maxLength={1200}
+                      rows={4}
+                      placeholder="Briefly describe what you need help with..."
+                      required
+                    />
+                  </div>
+                </>
+              ) : (
+                <div className="cv-request__field">
+                  <label htmlFor={`${requestType}-request-need`}>Purpose</label>
+                  <select id={`${requestType}-request-need`} name="need" defaultValue="" required>
+                    <option value="" disabled>
+                      Select your purpose
                     </option>
-                  ))}
-                </select>
-              </div>
+                    {needOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               <div className="cv-request__honeypot" aria-hidden="true">
                 <label htmlFor={`${requestType}-request-website`}>Website</label>

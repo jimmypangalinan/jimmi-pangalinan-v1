@@ -8,7 +8,6 @@ import {
   Mail,
   MapPin,
   PhoneCall,
-  Check,
   Quote,
 } from "lucide-react";
 import { useState } from "react";
@@ -19,7 +18,6 @@ import {
   experience,
   languages,
   posts,
-  pricing,
   profile,
   services,
   softSkills,
@@ -88,7 +86,6 @@ function SectionTabs({
 const serviceShortcuts = [
   { id: "services-all", label: "All" },
   { id: "services-overview", label: "Services" },
-  { id: "services-pricing", label: "Pricing" },
   { id: "services-clients", label: "Clients" },
   { id: "services-testimonials", label: "Testimonials" },
 ] as const;
@@ -264,7 +261,7 @@ export function ServicesSection() {
               return (
                 <article
                   key={s.title}
-                  className="rounded-2xl border border-border bg-surface-2/60 p-6"
+                  className="flex flex-col rounded-2xl border border-border bg-surface-2/60 p-6"
                 >
                   <span className="flex size-11 items-center justify-center rounded-xl bg-primary/15 text-primary">
                     <Icon className="size-5" />
@@ -273,7 +270,17 @@ export function ServicesSection() {
                     {s.meta}
                   </p>
                   <h3 className="mt-2 text-lg font-medium">{s.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
+                  <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">
+                    {s.body}
+                  </p>
+                  <ContactRequestDialog requestType="proposal" service={s.title}>
+                    <button
+                      type="button"
+                      className="mt-6 inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                    >
+                      Request a Proposal <ArrowUpRight className="size-4" />
+                    </button>
+                  </ContactRequestDialog>
                 </article>
               );
             })}
@@ -281,7 +288,7 @@ export function ServicesSection() {
         )}
 
         {(showAll || activeSection !== "services-overview") && (
-          <PricingSection activeSection={activeSection} />
+          <ServiceDetailsSection activeSection={activeSection} />
         )}
       </div>
     </section>
@@ -521,56 +528,11 @@ export function ContactSection() {
   );
 }
 
-export function PricingSection({ activeSection }: { activeSection: string }) {
+function ServiceDetailsSection({ activeSection }: { activeSection: string }) {
   const showAll = activeSection === "services-all";
 
   return (
     <section className="portfolio-section service-tab-sections">
-      {(showAll || activeSection === "services-pricing") && (
-        <div>
-          <SectionTitle>Pricing</SectionTitle>
-          <div className="grid gap-4 lg:grid-cols-3">
-            {pricing.map((p) => (
-              <article
-                key={p.name}
-                className={`flex flex-col rounded-2xl border p-6 ${
-                  p.highlighted ? "border-primary/60 bg-primary/5" : "border-border bg-surface-2/60"
-                }`}
-              >
-                <p className="text-xs uppercase tracking-widest text-muted-foreground">{p.name}</p>
-                <p className="mt-4 text-3xl font-semibold">
-                  {p.price}
-                  <span className="ml-1 text-sm font-normal text-muted-foreground">{p.unit}</span>
-                </p>
-                <p className="mt-2 text-sm text-primary">{p.tagline}</p>
-                <ul className="mt-6 flex-1 space-y-3 text-sm text-muted-foreground">
-                  {p.features.map((f) => (
-                    <li key={f} className="flex gap-3">
-                      <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <a
-                  href={`mailto:${profile.email}?subject=${encodeURIComponent(`Inquiry: ${p.name}`)}`}
-                  className={`mt-8 inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition-opacity ${
-                    p.highlighted
-                      ? "bg-primary text-primary-foreground hover:opacity-90"
-                      : "border border-border text-foreground hover:border-primary hover:text-primary"
-                  }`}
-                >
-                  Get Started
-                </a>
-              </article>
-            ))}
-          </div>
-          <p className="mt-4 text-xs text-muted-foreground">
-            Harga indikatif dan dapat disesuaikan dengan scope, jumlah service, dan durasi
-            engagement.
-          </p>
-        </div>
-      )}
-
       {(showAll || activeSection === "services-clients") && (
         <div>
           <SectionTitle>Clients &amp; Engagements</SectionTitle>

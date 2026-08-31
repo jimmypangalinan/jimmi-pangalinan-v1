@@ -165,47 +165,6 @@ export const certifications = [
   },
 ];
 
-export const pricing = [
-  {
-    name: "Starter POC",
-    price: "Rp 7,5 jt",
-    unit: "/ paket",
-    tagline: "Proof of Concept 1–2 minggu",
-    features: [
-      "1 pipeline CI/CD end-to-end",
-      "Containerization 1 aplikasi",
-      "Setup Git branching & quality gate dasar",
-      "Dokumentasi & handover session",
-    ],
-  },
-  {
-    name: "DevOps Delivery",
-    price: "Rp 25 jt",
-    unit: "/ proyek",
-    tagline: "Implementasi produksi 4–6 minggu",
-    highlighted: true,
-    features: [
-      "Multi-env pipeline (dev / staging / prod)",
-      "Kubernetes + GitOps (ArgoCD / Helm)",
-      "Infrastructure as Code (Terraform, Ansible)",
-      "DevSecOps: SonarQube, Nexus, secret management",
-      "Monitoring & alerting dasar",
-    ],
-  },
-  {
-    name: "Platform Retainer",
-    price: "Rp 12 jt",
-    unit: "/ bulan",
-    tagline: "Operasional & improvement berkelanjutan",
-    features: [
-      "Maintenance pipeline & cluster",
-      "On-call support jam kerja",
-      "Optimasi biaya cloud",
-      "Laporan bulanan & roadmap improvement",
-    ],
-  },
-];
-
 export const clients = [
   { name: "Avows Technology", note: "Pipeline platform" },
   { name: "Naradacode", note: "DevSecOps POC" },

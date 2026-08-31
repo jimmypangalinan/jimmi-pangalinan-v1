@@ -675,6 +675,12 @@
   margin-top: 25px;
 }
 
+.cv-request__row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
 .cv-request__field {
   display: grid;
   gap: 8px;
@@ -689,9 +695,9 @@
 }
 
 .cv-request__field input,
-.cv-request__field select {
+.cv-request__field select,
+.cv-request__field textarea {
   width: 100%;
-  height: 48px;
   border: 1px solid var(--border);
   border-radius: 11px;
   outline: 0;
@@ -705,7 +711,21 @@
     box-shadow 160ms ease;
 }
 
-.cv-request__field input::placeholder {
+.cv-request__field input,
+.cv-request__field select {
+  height: 48px;
+}
+
+.cv-request__field textarea {
+  min-height: 104px;
+  resize: vertical;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  line-height: 1.55;
+}
+
+.cv-request__field input::placeholder,
+.cv-request__field textarea::placeholder {
   color: var(--muted-foreground);
   opacity: 0.75;
 }
@@ -717,9 +737,15 @@
 }
 
 .cv-request__field input:focus,
-.cv-request__field select:focus {
+.cv-request__field select:focus,
+.cv-request__field textarea:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px var(--accent);
+}
+
+.cv-request__field input:read-only {
+  cursor: default;
+  color: var(--primary);
 }
 
 .cv-request__field option {
