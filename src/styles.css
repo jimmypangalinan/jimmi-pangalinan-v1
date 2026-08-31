@@ -1059,14 +1059,16 @@
   color: var(--primary);
 }
 
-.works-filters {
+.works-filters,
+.section-tabs {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 8px;
 }
 
-.works-filters button {
+.works-filters button,
+.section-tabs button {
   min-height: 32px;
   border: 1px solid transparent;
   border-radius: 999px;
@@ -1087,13 +1089,15 @@
     transform 180ms ease;
 }
 
-.works-filters button:hover {
+.works-filters button:hover,
+.section-tabs button:hover {
   border-color: rgba(166, 43, 70, 0.42);
   color: var(--foreground);
   transform: translateY(-1px);
 }
 
-.works-filters button.is-active {
+.works-filters button.is-active,
+.section-tabs button.is-active {
   border-color: var(--primary);
   background: var(--primary);
   color: var(--primary-foreground);
@@ -1103,6 +1107,21 @@
   height: 1px;
   margin-top: 28px;
   background: var(--border);
+}
+
+.section-tab-panel {
+  min-height: 220px;
+}
+
+.section-tab-panel--stack,
+.service-tab-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+.section-tab-panel--wide {
+  gap: 88px;
 }
 
 .works-grid {
@@ -1724,8 +1743,18 @@ button.contact-card:hover {
     gap: 22px;
   }
 
-  .works-filters {
+  .works-filters,
+  .section-tabs {
     justify-content: flex-start;
+  }
+
+  .section-tab-panel--stack,
+  .service-tab-sections {
+    gap: 48px;
+  }
+
+  .section-tab-panel--wide {
+    gap: 70px;
   }
 
   .section-heading-block {

@@ -6,7 +6,6 @@ import {
   AboutSection,
   BlogSection,
   ContactSection,
-  PricingSection,
   ResumeSection,
   ServicesSection,
   SkillsSection,
@@ -148,7 +147,6 @@ function Index() {
 
             <div id="services" className="portfolio-page section-stack">
               <ServicesSection />
-              <PricingSection />
             </div>
 
             <div id="resume" className="portfolio-page">
