@@ -88,22 +88,7 @@ export function ContactRequestDialog({
     const body = new URLSearchParams();
 
     if (isProposal) {
-      const company = String(formData.get("company") ?? "").trim();
-      const projectDescription = String(formData.get("projectDescription") ?? "").trim();
-      const selectedService = service ?? String(formData.get("service") ?? "").trim();
-
-      formData.set("requestType", "call");
-      formData.set(
-        "need",
-        [
-          "Proposal Request",
-          `Service: ${selectedService}`,
-          company && `Company: ${company}`,
-          `Project: ${projectDescription}`,
-        ]
-          .filter(Boolean)
-          .join("\n"),
-      );
+      formData.set("requestType", "proposal");
     }
 
     formData.forEach((value, key) => body.append(key, String(value)));
@@ -297,8 +282,9 @@ export function ContactRequestDialog({
               )}
 
               <p className="cv-request__privacy">
-                Your information will only be used to fulfill this request and follow up on the
-                purpose you selected.
+                {isProposal
+                  ? "Your information will only be used to review your project request and contact you."
+                  : "Your information will only be used to fulfill this request and follow up on the purpose you selected."}
               </p>
 
               <button
