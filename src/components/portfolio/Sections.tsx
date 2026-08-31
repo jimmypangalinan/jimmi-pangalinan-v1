@@ -123,7 +123,10 @@ export function AboutSection() {
       <dl className="hero-stats">
         {stats.map((s) => (
           <div key={s.value}>
-            <dd>{s.value}</dd>
+            <dd>
+              {s.value}
+              {s.suffix && <span className="hero-stats__suffix">{s.suffix}</span>}
+            </dd>
             <dt>{s.label}</dt>
           </div>
         ))}

@@ -246,7 +246,7 @@
 
 .portfolio-shell {
   position: relative;
-  width: min(1268px, calc(100vw - 48px));
+  width: min(1380px, calc(100vw - 48px));
   height: min(700px, calc(100vh - 48px));
   margin: max(24px, calc((100vh - 700px) / 2)) auto;
   display: grid;
@@ -1011,6 +1011,14 @@
   font-weight: 400;
   letter-spacing: -0.06em;
   line-height: 1;
+}
+
+.hero-stats__suffix {
+  display: inline-block;
+  margin-left: 0.06em;
+  font-size: 0.58em;
+  letter-spacing: -0.04em;
+  transform: translateY(-0.28em);
 }
 
 .light .hero-stats dd {
