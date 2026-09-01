@@ -11,22 +11,9 @@ import {
   Quote,
 } from "lucide-react";
 import { useState } from "react";
-import {
-  certifications,
-  clients,
-  coreSkills,
-  experience,
-  languages,
-  posts,
-  profile,
-  services,
-  softSkills,
-  stats,
-  testimonials,
-  tools,
-  works,
-} from "@/lib/portfolio-data";
+import { usePortfolioData } from "@/lib/usePortfolioStore";
 import { ContactRequestDialog } from "./ContactRequestDialog";
+import { WorkDetailDialog } from "./WorkDetailDialog";
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return <h2 className="section-kicker">{children}</h2>;
@@ -105,6 +92,9 @@ const skillsShortcuts = [
 ] as const;
 
 export function AboutSection() {
+  const { data } = usePortfolioData();
+  const { profile, stats } = data;
+
   return (
     <section className="portfolio-section hero-section animate-rise">
       <SectionHeader title="About" />
@@ -133,6 +123,8 @@ export function AboutSection() {
 }
 
 export function WorksSection() {
+  const { data } = usePortfolioData();
+  const works = data.works;
   const workFilters = ["All", "CI/CD", "Cloud", "Kubernetes", "DevSecOps", "Observability"];
   const [activeFilter, setActiveFilter] = useState("All");
   const visibleWorks =
@@ -171,58 +163,90 @@ export function WorksSection() {
       <div className="works-grid">
         {visibleWorks.map((work) => {
           const VisualIcon = workVisualIcons[work.visual] ?? GitBranch;
+          const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+          const ytMatch = work.youtubeUrl?.match(regExp);
+          const ytThumb =
+            ytMatch && ytMatch[2].length === 11
+              ? `https://img.youtube.com/vi/${ytMatch[2]}/maxresdefault.jpg`
+              : undefined;
+          const thumbnail = work.image || ytThumb;
 
           return (
-            <article key={work.title} className="work-card">
-              <div className={`work-card__visual work-card__visual--${work.visual}`}>
-                <div className="work-visual__glow" />
-                <div className="work-visual__window">
-                  <div className="work-visual__bar">
-                    <span className="work-visual__lights" aria-hidden="true">
-                      <i />
-                      <i />
-                      <i />
-                    </span>
-                    <span>{work.console}</span>
-                  </div>
-                  <div className="work-visual__summary">
-                    <span className="work-visual__icon">
-                      <VisualIcon aria-hidden="true" />
-                    </span>
-                    <span>
-                      <small>Environment</small>
-                      <strong>Production</strong>
-                    </span>
-                  </div>
-                  <div className="work-visual__stages">
-                    {work.stages.map((stage, index) => (
-                      <span key={stage}>
-                        <i>{String(index + 1).padStart(2, "0")}</i>
-                        {stage}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="work-visual__status">
-                    <span aria-hidden="true" />
-                    {work.status}
-                  </div>
+            <WorkDetailDialog key={work.title} work={work}>
+              <article className="work-card" role="button" tabIndex={0}>
+                <div className={`work-card__visual work-card__visual--${work.visual}`}>
+                  <div className="work-visual__glow" />
+                  {thumbnail ? (
+                    <>
+                      <img
+                        src={thumbnail}
+                        alt={work.title}
+                        className="work-card__img"
+                        loading="lazy"
+                      />
+                      <div className="work-card__img-overlay" />
+                      {/* Clean corner badges */}
+                      <div className="pointer-events-none absolute top-3 left-3 right-3 z-10 flex items-center justify-between">
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/60 px-2.5 py-1 text-[10px] font-semibold tracking-wider text-white backdrop-blur-md uppercase">
+                          <VisualIcon className="size-3 text-primary" />
+                          <span>{work.category}</span>
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-black/60 px-2.5 py-1 font-mono text-[10px] text-zinc-300 backdrop-blur-md">
+                          <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                          <span>{work.status}</span>
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="work-visual__window">
+                      <div className="work-visual__bar">
+                        <span className="work-visual__lights" aria-hidden="true">
+                          <i />
+                          <i />
+                          <i />
+                        </span>
+                        <span>{work.console}</span>
+                      </div>
+                      <div className="work-visual__summary">
+                        <span className="work-visual__icon">
+                          <VisualIcon aria-hidden="true" />
+                        </span>
+                        <span>
+                          <small>Environment</small>
+                          <strong>Production</strong>
+                        </span>
+                      </div>
+                      <div className="work-visual__stages">
+                        {work.stages.map((stage, index) => (
+                          <span key={stage}>
+                            <i>{String(index + 1).padStart(2, "0")}</i>
+                            {stage}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="work-visual__status">
+                        <span aria-hidden="true" />
+                        {work.status}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
 
-              <div className="work-card__tags" aria-label="Project technologies">
-                {work.tags.map((tag) => (
-                  <span key={tag}>{tag}</span>
-                ))}
-              </div>
+                <div className="work-card__tags" aria-label="Project technologies">
+                  {work.tags.map((tag) => (
+                    <span key={tag}>{tag}</span>
+                  ))}
+                </div>
 
-              <div className="work-card__heading">
-                <h3>{work.title}</h3>
-                <span className="work-card__arrow" aria-hidden="true">
-                  <ArrowUpRight />
-                </span>
-              </div>
-              <p>{work.body}</p>
-            </article>
+                <div className="work-card__heading">
+                  <h3>{work.title}</h3>
+                  <span className="work-card__arrow" aria-hidden="true">
+                    <ArrowUpRight />
+                  </span>
+                </div>
+                <p>{work.body}</p>
+              </article>
+            </WorkDetailDialog>
           );
         })}
       </div>
@@ -233,6 +257,8 @@ export function WorksSection() {
 const serviceIcons = [GitBranch, Cloud, ShieldCheck, Boxes];
 
 export function ServicesSection() {
+  const { data } = usePortfolioData();
+  const services = data.services;
   const [activeSection, setActiveSection] = useState(serviceShortcuts[0].id);
   const showAll = activeSection === "services-all";
 
@@ -248,7 +274,6 @@ export function ServicesSection() {
       </SectionHeader>
 
       <div
-        key={activeSection}
         id={`${activeSection}-panel`}
         role="tabpanel"
         aria-labelledby={`${activeSection}-tab`}
@@ -261,12 +286,12 @@ export function ServicesSection() {
               return (
                 <article
                   key={s.title}
-                  className="flex flex-col rounded-2xl border border-border bg-surface-2/60 p-6"
+                  className="flex flex-col rounded-3xl border border-border bg-surface p-6 shadow-sm"
                 >
-                  <span className="flex size-11 items-center justify-center rounded-xl bg-primary/15 text-primary">
+                  <div className="flex size-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                     <Icon className="size-5" />
-                  </span>
-                  <p className="mt-5 text-xs uppercase tracking-widest text-muted-foreground">
+                  </div>
+                  <p className="mt-4 font-mono text-[11px] uppercase tracking-wider text-primary">
                     {s.meta}
                   </p>
                   <h3 className="mt-2 text-lg font-medium">{s.title}</h3>
@@ -296,6 +321,8 @@ export function ServicesSection() {
 }
 
 export function ResumeSection() {
+  const { data } = usePortfolioData();
+  const { experience, certifications } = data;
   const [activeSection, setActiveSection] = useState(resumeShortcuts[0].id);
   const showAll = activeSection === "resume-all";
 
@@ -378,6 +405,8 @@ function Bar({ name, value }: { name: string; value: number }) {
 }
 
 export function SkillsSection() {
+  const { data } = usePortfolioData();
+  const { coreSkills, tools, languages, softSkills } = data;
   const [activeSection, setActiveSection] = useState(skillsShortcuts[0].id);
   const showAll = activeSection === "skills-all";
 
@@ -451,6 +480,9 @@ export function SkillsSection() {
 }
 
 export function ContactSection() {
+  const { data } = usePortfolioData();
+  const profile = data.profile;
+
   return (
     <section className="portfolio-section animate-rise">
       <SectionHeader title="Contact" />
@@ -529,6 +561,8 @@ export function ContactSection() {
 }
 
 function ServiceDetailsSection({ activeSection }: { activeSection: string }) {
+  const { data } = usePortfolioData();
+  const { clients, testimonials } = data;
   const showAll = activeSection === "services-all";
 
   return (
@@ -580,6 +614,8 @@ function ServiceDetailsSection({ activeSection }: { activeSection: string }) {
 }
 
 export function BlogSection() {
+  const { data } = usePortfolioData();
+  const posts = data.posts;
   return (
     <section className="portfolio-section animate-rise">
       <SectionHeader title="Blog" />

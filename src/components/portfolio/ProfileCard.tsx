@@ -9,7 +9,7 @@ import {
   Youtube,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { profile } from "@/lib/portfolio-data";
+import { usePortfolioData } from "@/lib/usePortfolioStore";
 import { ContactRequestDialog } from "./ContactRequestDialog";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -21,6 +21,8 @@ const icons: Record<string, typeof Github> = {
 };
 
 export function ProfileCard() {
+  const { data } = usePortfolioData();
+  const profile = data.profile;
   const [roleIndex, setRoleIndex] = useState(0);
   const [typedRole, setTypedRole] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
@@ -65,7 +67,7 @@ export function ProfileCard() {
     }, delay);
 
     return () => window.clearTimeout(timeout);
-  }, [isDeleting, prefersReducedMotion, roleIndex, typedRole]);
+  }, [isDeleting, prefersReducedMotion, profile.role, profile.roles, roleIndex, typedRole]);
 
   const showNavigation = () => {
     const navigation = document.getElementById("portfolio-navigation");

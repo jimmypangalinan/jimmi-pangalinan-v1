@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { profile } from "@/lib/portfolio-data";
+import { usePortfolioData } from "@/lib/usePortfolioStore";
 
 const needOptions = [
   "Hiring / Recruitment",
@@ -60,6 +60,8 @@ export function ContactRequestDialog({
   service,
   children,
 }: ContactRequestDialogProps) {
+  const { data } = usePortfolioData();
+  const profile = data.profile;
   const copy = dialogCopy[requestType];
   const isProposal = requestType === "proposal";
   const [open, setOpen] = useState(false);
