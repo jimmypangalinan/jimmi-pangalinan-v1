@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Briefcase, FileText, Newspaper, PenLine, Send, Settings, User } from "lucide-react";
 import { ProfileCard } from "@/components/portfolio/ProfileCard";
+import { useLanguage } from "@/lib/i18n";
 import {
   AboutSection,
   BlogSection,
@@ -43,6 +44,7 @@ const navigation = [
 type SectionId = (typeof navigation)[number]["id"];
 
 function Index() {
+  const { t } = useLanguage();
   const [active, setActive] = useState<SectionId>("about");
 
   useEffect(() => {
@@ -108,7 +110,7 @@ function Index() {
   return (
     <>
       <a className="skip-link" href="#about">
-        Skip to portfolio content
+        {t("Skip to portfolio content")}
       </a>
       <div className="portfolio-shell">
         <ProfileCard />
@@ -117,7 +119,7 @@ function Index() {
           <nav
             id="portfolio-navigation"
             className="portfolio-navigation"
-            aria-label="Portfolio sections"
+            aria-label={t("Portfolio sections")}
           >
             {navigation.map(({ id, label, icon: Icon }) => {
               const isActive = id === active;
@@ -130,7 +132,7 @@ function Index() {
                   className={isActive ? "is-active" : undefined}
                 >
                   <Icon aria-hidden="true" />
-                  <span>{label}</span>
+                  <span>{t(label)}</span>
                 </button>
               );
             })}
@@ -164,7 +166,7 @@ function Index() {
             <div id="contact" className="portfolio-page portfolio-page--contact">
               <ContactSection />
               <footer className="portfolio-footer">
-                © {new Date().getFullYear()} {"Jimmi Pangalinan"}. All rights reserved.
+                © {new Date().getFullYear()} {"Jimmi Pangalinan"}. {t("All rights reserved.")}
               </footer>
             </div>
           </main>

@@ -21,6 +21,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import type { WorkItem } from "@/lib/portfolio-data";
+import { useLanguage } from "@/lib/i18n";
 import { ContactRequestDialog } from "./ContactRequestDialog";
 
 const workVisualIcons: Record<string, typeof GitBranch> = {
@@ -36,8 +37,9 @@ function getYoutubeEmbedUrl(url?: string): string | null {
   try {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
-    return match && match[2].length === 11
-      ? `https://www.youtube.com/embed/${match[2]}?autoplay=1&rel=0`
+    const videoId = match?.[2];
+    return videoId && videoId.length === 11
+      ? `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`
       : null;
   } catch {
     return null;
@@ -49,8 +51,9 @@ function getYoutubeThumbnailUrl(url?: string): string | null {
   try {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
-    return match && match[2].length === 11
-      ? `https://img.youtube.com/vi/${match[2]}/maxresdefault.jpg`
+    const videoId = match?.[2];
+    return videoId && videoId.length === 11
+      ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
       : null;
   } catch {
     return null;
@@ -63,6 +66,7 @@ interface WorkDetailDialogProps {
 }
 
 export function WorkDetailDialog({ work, children }: WorkDetailDialogProps) {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [isPlayingVideo, setIsPlayingVideo] = useState(false);
   const VisualIcon = workVisualIcons[work.visual] ?? GitBranch;
@@ -116,13 +120,13 @@ export function WorkDetailDialog({ work, children }: WorkDetailDialogProps) {
                   type="button"
                   onClick={() => setIsPlayingVideo(true)}
                   className="group absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/40 transition-all hover:bg-black/20 cursor-pointer"
-                  aria-label="Play project video demo"
+                  aria-label={t("Project video demo")}
                 >
                   <span className="flex size-14 items-center justify-center rounded-full bg-red-600 text-white shadow-2xl transition-transform duration-300 group-hover:scale-110 group-active:scale-95">
                     <Play className="ml-1 size-6 fill-white" />
                   </span>
                   <span className="rounded-full border border-white/20 bg-black/70 px-4 py-1 text-xs font-semibold tracking-wide text-white backdrop-blur-md transition-colors group-hover:border-red-500">
-                    Click to Play Video Demo
+                    {t("Click to Play Video Demo")}
                   </span>
                 </button>
               )}
@@ -171,7 +175,7 @@ export function WorkDetailDialog({ work, children }: WorkDetailDialogProps) {
           {work.body && (
             <div className="rounded-2xl border border-border/70 bg-surface-2/50 p-4">
               <h3 className="flex items-center gap-2 text-xs font-bold tracking-wider text-primary uppercase">
-                <FileText className="size-3.5" /> Brief Summary
+                <FileText className="size-3.5" /> {t("Brief Summary")}
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-foreground font-medium">
                 {work.body}
@@ -183,7 +187,7 @@ export function WorkDetailDialog({ work, children }: WorkDetailDialogProps) {
           {work.overview && (
             <div className="space-y-2">
               <h3 className="flex items-center gap-2 text-xs font-bold tracking-wider text-primary uppercase">
-                <Sparkles className="size-3.5" /> Detailed Technical Overview
+                <Sparkles className="size-3.5" /> {t("Detailed Technical Overview")}
               </h3>
               <DialogDescription className="text-sm leading-relaxed text-muted-foreground">
                 {work.overview}
@@ -195,7 +199,7 @@ export function WorkDetailDialog({ work, children }: WorkDetailDialogProps) {
           {work.deliverables && work.deliverables.length > 0 && (
             <div className="space-y-3">
               <h3 className="flex items-center gap-2 text-xs font-bold tracking-wider text-primary uppercase">
-                <CheckCircle2 className="size-3.5" /> Key Technical Deliverables
+                <CheckCircle2 className="size-3.5" /> {t("Key Technical Deliverables")}
               </h3>
               <ul className="grid gap-2 sm:grid-cols-2">
                 {work.deliverables.map((item, idx) => (
@@ -218,7 +222,7 @@ export function WorkDetailDialog({ work, children }: WorkDetailDialogProps) {
               onClick={() => setOpen(false)}
               className="inline-flex cursor-pointer items-center justify-center rounded-xl border border-border px-5 py-2.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              Close Overview
+              {t("Close Overview")}
             </button>
 
             <ContactRequestDialog requestType="proposal" service={work.title}>
@@ -226,7 +230,7 @@ export function WorkDetailDialog({ work, children }: WorkDetailDialogProps) {
                 type="button"
                 className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-xs font-semibold text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:shadow-primary/20 active:scale-95"
               >
-                <span>Request Proposal for Similar Solution</span>
+                <span>{t("Request Proposal for Similar Solution")}</span>
                 <ArrowUpRight className="size-4" />
               </button>
             </ContactRequestDialog>

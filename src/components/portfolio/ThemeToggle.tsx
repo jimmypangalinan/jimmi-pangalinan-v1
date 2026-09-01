@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
+import { useLanguage } from "@/lib/i18n";
 
 type Theme = "dark" | "light";
 
 export function ThemeToggle() {
+  const { t } = useLanguage();
   const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {
@@ -26,8 +28,8 @@ export function ThemeToggle() {
         setTheme(next);
         window.localStorage.setItem("theme", next);
       }}
-      aria-label={`Switch to ${next} mode`}
-      title={`Switch to ${next} mode`}
+      aria-label={t(`Switch to ${next} mode`)}
+      title={t(`Switch to ${next} mode`)}
       className="theme-toggle"
     >
       {theme === "dark" ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}

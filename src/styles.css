@@ -283,7 +283,14 @@
   justify-content: space-between;
 }
 
+.profile-card__controls-left {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
 .profile-card__menu,
+.language-toggle,
 .theme-toggle {
   width: 34px;
   height: 34px;
@@ -301,6 +308,7 @@
 }
 
 .profile-card__menu:hover,
+.language-toggle:hover,
 .theme-toggle:hover {
   background: var(--accent);
   color: var(--primary);
@@ -316,6 +324,32 @@
   width: 21px;
   height: 21px;
   stroke-width: 1.5;
+}
+
+.language-toggle {
+  width: auto;
+  gap: 5px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0 9px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.language-toggle svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 1.6;
+}
+
+.light .profile-card__menu,
+.light .language-toggle,
+.light .theme-toggle {
+  border-color: var(--border);
+  background: var(--surface-2);
+  color: var(--foreground);
 }
 
 .profile-card__photo {
@@ -1382,6 +1416,37 @@
 
 .service-solution-card__case-study:hover {
   border-color: rgba(255, 255, 255, 0.25);
+  color: var(--foreground);
+}
+
+.light .service-solution-card,
+.light .service-solution-card.is-featured {
+  border-color: var(--border);
+  background: var(--surface);
+  box-shadow: 0 18px 48px rgba(35, 38, 42, 0.09);
+}
+
+.light .service-solution-card.is-featured {
+  border-color: rgba(139, 30, 63, 0.38);
+  background: linear-gradient(145deg, rgba(139, 30, 63, 0.06), transparent 42%), var(--surface);
+}
+
+.light .service-solution-card__body,
+.light .service-solution-card__tools span,
+.light .service-solution-card__case-study {
+  color: var(--muted-foreground);
+}
+
+.light .service-solution-card__outcomes li {
+  color: var(--foreground);
+}
+
+.light .service-solution-card__tools small {
+  color: #73767a;
+}
+
+.light .service-solution-card__cta {
+  background: rgba(139, 30, 63, 0.07);
   color: var(--foreground);
 }
 

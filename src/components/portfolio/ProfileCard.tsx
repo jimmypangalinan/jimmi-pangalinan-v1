@@ -10,7 +10,9 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePortfolioData } from "@/lib/usePortfolioStore";
+import { localizeValue, useLanguage } from "@/lib/i18n";
 import { ContactRequestDialog } from "./ContactRequestDialog";
+import { LanguageToggle } from "./LanguageToggle";
 import { ThemeToggle } from "./ThemeToggle";
 
 const icons: Record<string, typeof Github> = {
@@ -22,7 +24,8 @@ const icons: Record<string, typeof Github> = {
 
 export function ProfileCard() {
   const { data } = usePortfolioData();
-  const profile = data.profile;
+  const { language, t } = useLanguage();
+  const profile = localizeValue(data.profile, language);
   const [roleIndex, setRoleIndex] = useState(0);
   const [typedRole, setTypedRole] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
@@ -85,15 +88,18 @@ export function ProfileCard() {
   return (
     <aside className="profile-card">
       <div className="profile-card__controls">
-        <button
-          type="button"
-          onClick={showNavigation}
-          className="profile-card__menu"
-          aria-label="Go to portfolio navigation"
-          title="Portfolio navigation"
-        >
-          <Menu aria-hidden="true" />
-        </button>
+        <div className="profile-card__controls-left">
+          <button
+            type="button"
+            onClick={showNavigation}
+            className="profile-card__menu"
+            aria-label={t("Go to portfolio navigation")}
+            title={t("Portfolio navigation")}
+          >
+            <Menu aria-hidden="true" />
+          </button>
+          <LanguageToggle />
+        </div>
         <ThemeToggle />
       </div>
 
@@ -128,7 +134,7 @@ export function ProfileCard() {
         </p>
       </div>
 
-      <div className="profile-card__socials" aria-label="Social links">
+      <div className="profile-card__socials" aria-label={t("Social links")}>
         {profile.socials.map((s) => {
           const Icon = icons[s.label] ?? Mail;
           return (
@@ -149,14 +155,14 @@ export function ProfileCard() {
         <ContactRequestDialog requestType="call">
           <button type="button" className="profile-card__call">
             <PhoneCall aria-hidden="true" />
-            Request a Call
+            {t("Request a Call")}
           </button>
         </ContactRequestDialog>
 
         <ContactRequestDialog requestType="cv">
           <button type="button" className="profile-card__download">
             <Download aria-hidden="true" />
-            Download CV
+            {t("Download CV")}
           </button>
         </ContactRequestDialog>
       </div>

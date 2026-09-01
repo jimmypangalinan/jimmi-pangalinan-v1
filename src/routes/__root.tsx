@@ -8,10 +8,11 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { LanguageProvider } from "@/lib/i18n";
 
 import appCss from "../styles.css?url";
 
-const siteUrl = import.meta.env.VITE_SITE_URL ?? "https://jimmilabs.me";
+const siteUrl = import.meta.env["VITE_SITE_URL"] ?? "https://jimmilabs.me";
 const socialImage = new URL("/og.png", siteUrl).href;
 
 function NotFoundComponent() {
@@ -142,8 +143,10 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <LanguageProvider>
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <Outlet />
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }

@@ -13,11 +13,18 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { usePortfolioData } from "@/lib/usePortfolioStore";
+import { localizeValue, useLanguage } from "@/lib/i18n";
 import { ContactRequestDialog } from "./ContactRequestDialog";
 import { WorkDetailDialog } from "./WorkDetailDialog";
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return <h2 className="section-kicker">{children}</h2>;
+}
+
+function useLocalizedPortfolioData() {
+  const { data } = usePortfolioData();
+  const { language } = useLanguage();
+  return localizeValue(data, language);
 }
 
 function SectionHeader({ title, children }: { title: string; children?: React.ReactNode }) {
@@ -51,6 +58,8 @@ function SectionTabs({
   activeId: string;
   onChange: (id: string) => void;
 }) {
+  const { t } = useLanguage();
+
   return (
     <div className="section-tabs" role="tablist" aria-label={label}>
       {items.map((item) => (
@@ -64,7 +73,7 @@ function SectionTabs({
           onClick={() => onChange(item.id)}
           className={activeId === item.id ? "is-active" : undefined}
         >
-          {item.label}
+          {t(item.label)}
         </button>
       ))}
     </div>
@@ -93,18 +102,28 @@ const skillsShortcuts = [
 ] as const;
 
 export function AboutSection() {
-  const { data } = usePortfolioData();
+  const data = useLocalizedPortfolioData();
+  const { language, t } = useLanguage();
   const { profile, stats } = data;
 
   return (
     <section className="portfolio-section hero-section animate-rise">
-      <SectionHeader title="About" />
+      <SectionHeader title={t("About")} />
       <p className="hero-eyebrow">
-        Hello, I&apos;m <span>{profile.name}</span>
+        {t("Hello, I'm")} <span>{profile.name}</span>
       </p>
       <h1 className="hero-title">
-        DevOps <span className="highlight-pill">Engineer</span> building reliable CI/CD and cloud
-        platforms.
+        {language === "id" ? (
+          <>
+            DevOps <span className="highlight-pill">Engineer</span> yang membangun platform CI/CD
+            dan cloud yang andal.
+          </>
+        ) : (
+          <>
+            DevOps <span className="highlight-pill">Engineer</span> building reliable CI/CD and
+            cloud platforms.
+          </>
+        )}
       </h1>
       <p className="hero-summary">{profile.intro}</p>
 
@@ -124,7 +143,8 @@ export function AboutSection() {
 }
 
 export function WorksSection() {
-  const { data } = usePortfolioData();
+  const data = useLocalizedPortfolioData();
+  const { t } = useLanguage();
   const works = data.works;
   const workFilters = ["All", "CI/CD", "Cloud", "Kubernetes", "DevSecOps", "Observability"];
   const [activeFilter, setActiveFilter] = useState("All");
@@ -141,8 +161,8 @@ export function WorksSection() {
 
   return (
     <section className="portfolio-section works-showcase animate-rise">
-      <SectionHeader title="Works">
-        <div className="works-filters" role="toolbar" aria-label="Filter DevOps projects">
+      <SectionHeader title={t("Works")}>
+        <div className="works-filters" role="toolbar" aria-label={t("Filter DevOps projects")}>
           {workFilters.map((filter) => (
             <button
               key={filter}
@@ -151,14 +171,15 @@ export function WorksSection() {
               className={activeFilter === filter ? "is-active" : undefined}
               aria-pressed={activeFilter === filter}
             >
-              {filter}
+              {t(filter)}
             </button>
           ))}
         </div>
       </SectionHeader>
 
       <p className="sr-only" aria-live="polite">
-        Showing {visibleWorks.length} {activeFilter === "All" ? "DevOps" : activeFilter} projects
+        {t("Showing")} {visibleWorks.length} {activeFilter === "All" ? "DevOps" : activeFilter}{" "}
+        {t("projects")}
       </p>
 
       <div className="works-grid">
@@ -166,9 +187,10 @@ export function WorksSection() {
           const VisualIcon = workVisualIcons[work.visual] ?? GitBranch;
           const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
           const ytMatch = work.youtubeUrl?.match(regExp);
+          const ytId = ytMatch?.[2];
           const ytThumb =
-            ytMatch && ytMatch[2].length === 11
-              ? `https://img.youtube.com/vi/${ytMatch[2]}/maxresdefault.jpg`
+            ytId && ytId.length === 11
+              ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`
               : undefined;
           const thumbnail = work.image || ytThumb;
           const visibleTags = work.tags.slice(0, 6);
@@ -235,13 +257,13 @@ export function WorksSection() {
                   )}
                 </div>
 
-                <div className="work-card__tags" aria-label="Project technologies">
+                <div className="work-card__tags" aria-label={t("Project technologies")}>
                   {visibleTags.map((tag) => (
                     <span key={tag}>{tag}</span>
                   ))}
                   {remainingTagCount > 0 && (
                     <span aria-label={`${remainingTagCount} additional technologies`}>
-                      +{remainingTagCount} Tools
+                      +{remainingTagCount} {t("Tools")}
                     </span>
                   )}
                 </div>
@@ -263,17 +285,18 @@ export function WorksSection() {
 }
 
 export function ServicesSection() {
-  const { data } = usePortfolioData();
+  const data = useLocalizedPortfolioData();
+  const { t } = useLanguage();
   const { services, works } = data;
-  const [activeSection, setActiveSection] = useState(serviceShortcuts[0].id);
+  const [activeSection, setActiveSection] = useState<string>(serviceShortcuts[0].id);
   const showAll = activeSection === "services-all";
 
   return (
     <section className="portfolio-section animate-rise">
-      <SectionHeader title="Services">
+      <SectionHeader title={t("Services")}>
         <SectionTabs
           items={serviceShortcuts}
-          label="Service content"
+          label={t("Services")}
           activeId={activeSection}
           onChange={setActiveSection}
         />
@@ -310,7 +333,7 @@ export function ServicesSection() {
                     {s.outcomes && s.outcomes.length > 0 && (
                       <ul
                         className="service-solution-card__outcomes"
-                        aria-label="Solution outcomes"
+                        aria-label={t("Solution outcomes")}
                       >
                         {s.outcomes.map((outcome) => (
                           <li key={outcome}>
@@ -323,7 +346,7 @@ export function ServicesSection() {
 
                     {s.tools && s.tools.length > 0 && (
                       <div className="service-solution-card__tools">
-                        <small>Technology foundation</small>
+                        <small>{t("Technology foundation")}</small>
                         <div>
                           {s.tools.map((tool) => (
                             <span key={tool}>{tool}</span>
@@ -335,7 +358,7 @@ export function ServicesSection() {
                     <div className="service-solution-card__actions">
                       <ContactRequestDialog requestType="proposal" service={s.title}>
                         <button type="button" className="service-solution-card__cta">
-                          <span>{s.cta ?? "Discuss Your Project"}</span>
+                          <span>{s.cta ?? t("Discuss Your Project")}</span>
                           <ArrowUpRight aria-hidden="true" />
                         </button>
                       </ContactRequestDialog>
@@ -343,7 +366,7 @@ export function ServicesSection() {
                       {relatedWork && (
                         <WorkDetailDialog work={relatedWork}>
                           <button type="button" className="service-solution-card__case-study">
-                            View Case Study
+                            {t("View Case Study")}
                           </button>
                         </WorkDetailDialog>
                       )}
@@ -364,17 +387,18 @@ export function ServicesSection() {
 }
 
 export function ResumeSection() {
-  const { data } = usePortfolioData();
+  const data = useLocalizedPortfolioData();
+  const { t } = useLanguage();
   const { experience, certifications } = data;
-  const [activeSection, setActiveSection] = useState(resumeShortcuts[0].id);
+  const [activeSection, setActiveSection] = useState<string>(resumeShortcuts[0].id);
   const showAll = activeSection === "resume-all";
 
   return (
     <section className="portfolio-section animate-rise">
-      <SectionHeader title="Resume">
+      <SectionHeader title={t("Resume")}>
         <SectionTabs
           items={resumeShortcuts}
-          label="Resume content"
+          label={t("Resume")}
           activeId={activeSection}
           onChange={setActiveSection}
         />
@@ -389,7 +413,7 @@ export function ResumeSection() {
       >
         {(showAll || activeSection === "resume-experience") && (
           <div>
-            <SectionTitle>Experience</SectionTitle>
+            <SectionTitle>{t("Experience")}</SectionTitle>
             <ol className="space-y-8 border-l border-border pl-6">
               {experience.map((e) => (
                 <li key={e.role + e.period} className="relative">
@@ -410,7 +434,7 @@ export function ResumeSection() {
 
         {(showAll || activeSection === "resume-certifications") && (
           <div>
-            <SectionTitle>Certifications</SectionTitle>
+            <SectionTitle>{t("Certifications")}</SectionTitle>
             <div className="grid gap-4 sm:grid-cols-2">
               {certifications.map((c) => (
                 <article
@@ -448,17 +472,18 @@ function Bar({ name, value }: { name: string; value: number }) {
 }
 
 export function SkillsSection() {
-  const { data } = usePortfolioData();
+  const data = useLocalizedPortfolioData();
+  const { t } = useLanguage();
   const { coreSkills, tools, languages, softSkills } = data;
-  const [activeSection, setActiveSection] = useState(skillsShortcuts[0].id);
+  const [activeSection, setActiveSection] = useState<string>(skillsShortcuts[0].id);
   const showAll = activeSection === "skills-all";
 
   return (
     <section className="portfolio-section animate-rise">
-      <SectionHeader title="Skills">
+      <SectionHeader title={t("Skills")}>
         <SectionTabs
           items={skillsShortcuts}
-          label="Skills content"
+          label={t("Skills")}
           activeId={activeSection}
           onChange={setActiveSection}
         />
@@ -473,7 +498,7 @@ export function SkillsSection() {
       >
         {(showAll || activeSection === "skills-core") && (
           <div>
-            <SectionTitle>Core Skills</SectionTitle>
+            <SectionTitle>{t("Core Skills")}</SectionTitle>
             <div className="grid gap-5 sm:grid-cols-2">
               {coreSkills.map((s) => (
                 <Bar key={s.name} {...s} />
@@ -484,7 +509,7 @@ export function SkillsSection() {
 
         {(showAll || activeSection === "skills-tools") && (
           <div>
-            <SectionTitle>Tools &amp; Platforms</SectionTitle>
+            <SectionTitle>{t("Tools")} &amp; Platforms</SectionTitle>
             <div className="grid gap-5 sm:grid-cols-2">
               {tools.map((t) => (
                 <Bar key={t.name} {...t} />
@@ -495,7 +520,7 @@ export function SkillsSection() {
 
         {(showAll || activeSection === "skills-languages") && (
           <div>
-            <SectionTitle>Languages</SectionTitle>
+            <SectionTitle>{t("Languages")}</SectionTitle>
             <div className="grid gap-5 sm:grid-cols-2">
               {languages.map((l) => (
                 <Bar key={l.name} {...l} />
@@ -506,7 +531,7 @@ export function SkillsSection() {
 
         {(showAll || activeSection === "skills-soft") && (
           <div>
-            <SectionTitle>Soft Skills</SectionTitle>
+            <SectionTitle>{t("Soft Skills")}</SectionTitle>
             <ul className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-2">
               {softSkills.map((s) => (
                 <li key={s} className="flex gap-3">
@@ -523,12 +548,13 @@ export function SkillsSection() {
 }
 
 export function ContactSection() {
-  const { data } = usePortfolioData();
+  const data = useLocalizedPortfolioData();
+  const { language, t } = useLanguage();
   const profile = data.profile;
 
   return (
     <section className="portfolio-section animate-rise">
-      <SectionHeader title="Contact" />
+      <SectionHeader title={t("Contact")} />
       <div className="contact-list">
         <div className="contact-list__primary">
           <a className="contact-card" href={`mailto:${profile.email}`}>
@@ -548,8 +574,10 @@ export function ContactSection() {
                 <PhoneCall aria-hidden="true" />
               </span>
               <span className="contact-card__copy">
-                <span className="contact-card__label">Request a Call</span>
-                <span className="contact-card__value">Share your contact details</span>
+                <span className="contact-card__label">{t("Request a Call")}</span>
+                <span className="contact-card__value">
+                  {language === "id" ? "Bagikan detail kontak Anda" : "Share your contact details"}
+                </span>
               </span>
               <ArrowUpRight className="contact-card__arrow" aria-hidden="true" />
             </button>
@@ -561,7 +589,7 @@ export function ContactSection() {
             <MapPin aria-hidden="true" />
           </span>
           <span className="contact-card__copy">
-            <span className="contact-card__label">Location</span>
+            <span className="contact-card__label">{language === "id" ? "Lokasi" : "Location"}</span>
             <span className="contact-card__value">{profile.location}</span>
           </span>
         </div>
@@ -576,25 +604,27 @@ export function ContactSection() {
           height="904"
         />
         <h3 className="text-3xl font-semibold sm:text-4xl">
-          Let&apos;s ship something <span className="highlight-pill">reliable</span>
+          {language === "id" ? "Mari membangun sesuatu yang" : "Let's ship something"}{" "}
+          <span className="highlight-pill">{language === "id" ? "andal" : "reliable"}</span>
         </h3>
         <p className="mt-4 max-w-xl text-muted-foreground">
-          Available for DevOps, platform engineering, and CI/CD automation work. Send a message and
-          I&apos;ll get back to you.
+          {language === "id"
+            ? "Tersedia untuk pekerjaan DevOps, platform engineering, dan otomasi CI/CD. Kirim pesan dan saya akan segera menghubungi Anda."
+            : "Available for DevOps, platform engineering, and CI/CD automation work. Send a message and I'll get back to you."}
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <a
             href={`mailto:${profile.email}`}
             className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
           >
-            Send Message <ArrowUpRight className="size-4" />
+            {language === "id" ? "Kirim Pesan" : "Send Message"} <ArrowUpRight className="size-4" />
           </a>
           <ContactRequestDialog requestType="call">
             <button
               type="button"
               className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-border px-6 py-3 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-primary"
             >
-              Request a Call <PhoneCall className="size-4" />
+              {t("Request a Call")} <PhoneCall className="size-4" />
             </button>
           </ContactRequestDialog>
         </div>
@@ -604,7 +634,8 @@ export function ContactSection() {
 }
 
 function ServiceDetailsSection({ activeSection }: { activeSection: string }) {
-  const { data } = usePortfolioData();
+  const data = useLocalizedPortfolioData();
+  const { language, t } = useLanguage();
   const { clients, testimonials } = data;
   const showAll = activeSection === "services-all";
 
@@ -612,7 +643,9 @@ function ServiceDetailsSection({ activeSection }: { activeSection: string }) {
     <section className="portfolio-section service-tab-sections">
       {(showAll || activeSection === "services-clients") && (
         <div>
-          <SectionTitle>Clients &amp; Engagements</SectionTitle>
+          <SectionTitle>
+            {t("Clients")} &amp; {language === "id" ? "Kolaborasi" : "Engagements"}
+          </SectionTitle>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
             {clients.map((c) => (
               <div
@@ -632,7 +665,7 @@ function ServiceDetailsSection({ activeSection }: { activeSection: string }) {
 
       {(showAll || activeSection === "services-testimonials") && (
         <div>
-          <SectionTitle>Testimonials</SectionTitle>
+          <SectionTitle>{t("Testimonials")}</SectionTitle>
           <div className="grid gap-4 sm:grid-cols-3">
             {testimonials.map((t) => (
               <figure
@@ -657,11 +690,12 @@ function ServiceDetailsSection({ activeSection }: { activeSection: string }) {
 }
 
 export function BlogSection() {
-  const { data } = usePortfolioData();
+  const data = useLocalizedPortfolioData();
+  const { t } = useLanguage();
   const posts = data.posts;
   return (
     <section className="portfolio-section animate-rise">
-      <SectionHeader title="Blog" />
+      <SectionHeader title={t("Blog")} />
       <div className="grid gap-4 sm:grid-cols-2">
         {posts.map((p) => (
           <article

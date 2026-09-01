@@ -9,6 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { usePortfolioData } from "@/lib/usePortfolioStore";
+import { useLanguage } from "@/lib/i18n";
 
 const needOptions = [
   "Hiring / Recruitment",
@@ -61,8 +62,40 @@ export function ContactRequestDialog({
   children,
 }: ContactRequestDialogProps) {
   const { data } = usePortfolioData();
+  const { language } = useLanguage();
   const profile = data.profile;
-  const copy = dialogCopy[requestType];
+  const copy =
+    language === "id"
+      ? {
+          cv: {
+            eyebrow: "MINTA CV SAYA",
+            title: "Mari berkenalan terlebih dahulu",
+            description:
+              "Ceritakan sedikit tentang Anda dan saya akan mengirimkan CV langsung ke email Anda.",
+            submit: "Kirim CV ke Email Saya",
+            successTitle: "CV berhasil dikirim",
+            successMessage: "CV saya telah dikirim ke",
+          },
+          call: {
+            eyebrow: "JADWALKAN PANGGILAN",
+            title: "Mari mulai percakapan",
+            description:
+              "Bagikan detail kontak dan kebutuhan Anda. Saya akan memeriksanya dan menghubungi Anda secara langsung.",
+            submit: "Kirim Permintaan Panggilan",
+            successTitle: "Permintaan panggilan diterima",
+            successMessage: "Terima kasih. Saya akan memeriksa permintaan Anda dan menghubungi",
+          },
+          proposal: {
+            eyebrow: "MINTA PROPOSAL",
+            title: "Ceritakan proyek Anda",
+            description:
+              "Bagikan detail kontak dan brief singkat proyek Anda. Saya akan memeriksanya dan menghubungi Anda secara langsung.",
+            submit: "Kirim Permintaan Proposal",
+            successTitle: "Permintaan proposal diterima",
+            successMessage: "Terima kasih. Saya akan memeriksa proyek Anda dan menghubungi",
+          },
+        }[requestType]
+      : dialogCopy[requestType];
   const isProposal = requestType === "proposal";
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<RequestStatus>("idle");
@@ -125,7 +158,9 @@ export function ContactRequestDialog({
 
   const phoneField = (
     <div className="cv-request__field">
-      <label htmlFor={`${requestType}-request-phone`}>Phone / WhatsApp Number</label>
+      <label htmlFor={`${requestType}-request-phone`}>
+        {language === "id" ? "Nomor Telepon / WhatsApp" : "Phone / WhatsApp Number"}
+      </label>
       <input
         id={`${requestType}-request-phone`}
         name="phone"
@@ -140,7 +175,9 @@ export function ContactRequestDialog({
         required
       />
       <span id={`${requestType}-request-phone-hint`} className="cv-request__field-hint">
-        Include the country code so I can contact you directly.
+        {language === "id"
+          ? "Sertakan kode negara agar saya dapat menghubungi Anda secara langsung."
+          : "Include the country code so I can contact you directly."}
       </span>
     </div>
   );
@@ -158,10 +195,13 @@ export function ContactRequestDialog({
             <DialogTitle>{copy.successTitle}</DialogTitle>
             <DialogDescription>
               {copy.successMessage} <strong>{submittedContact}</strong>.
-              {requestType === "cv" && " Please check your spam folder if it is not in your inbox."}
+              {requestType === "cv" &&
+                (language === "id"
+                  ? " Silakan periksa folder spam jika tidak ada di inbox."
+                  : " Please check your spam folder if it is not in your inbox.")}
             </DialogDescription>
             <button type="button" onClick={() => handleOpenChange(false)}>
-              Done
+              {language === "id" ? "Selesai" : "Done"}
             </button>
           </div>
         ) : (
@@ -179,7 +219,9 @@ export function ContactRequestDialog({
 
               <div className="cv-request__row">
                 <div className="cv-request__field">
-                  <label htmlFor={`${requestType}-request-name`}>Full Name</label>
+                  <label htmlFor={`${requestType}-request-name`}>
+                    {language === "id" ? "Nama Lengkap" : "Full Name"}
+                  </label>
                   <input
                     id={`${requestType}-request-name`}
                     name="name"
@@ -187,13 +229,15 @@ export function ContactRequestDialog({
                     minLength={2}
                     maxLength={80}
                     autoComplete="name"
-                    placeholder="Your name"
+                    placeholder={language === "id" ? "Nama Anda" : "Your name"}
                     required
                   />
                 </div>
 
                 <div className="cv-request__field">
-                  <label htmlFor={`${requestType}-request-email`}>Email Address</label>
+                  <label htmlFor={`${requestType}-request-email`}>
+                    {language === "id" ? "Alamat Email" : "Email Address"}
+                  </label>
                   <input
                     id={`${requestType}-request-email`}
                     name="email"
@@ -209,14 +253,16 @@ export function ContactRequestDialog({
                 <div className="cv-request__row">
                   {phoneField}
                   <div className="cv-request__field">
-                    <label htmlFor="proposal-request-company">Company (Optional)</label>
+                    <label htmlFor="proposal-request-company">
+                      {language === "id" ? "Perusahaan (Opsional)" : "Company (Optional)"}
+                    </label>
                     <input
                       id="proposal-request-company"
                       name="company"
                       type="text"
                       maxLength={100}
                       autoComplete="organization"
-                      placeholder="Company name"
+                      placeholder={language === "id" ? "Nama perusahaan" : "Company name"}
                     />
                   </div>
                 </div>
@@ -227,7 +273,9 @@ export function ContactRequestDialog({
               {isProposal ? (
                 <>
                   <div className="cv-request__field">
-                    <label htmlFor="proposal-request-service">Selected Service</label>
+                    <label htmlFor="proposal-request-service">
+                      {language === "id" ? "Layanan yang Dipilih" : "Selected Service"}
+                    </label>
                     <input
                       id="proposal-request-service"
                       name="service"
@@ -238,28 +286,44 @@ export function ContactRequestDialog({
                   </div>
 
                   <div className="cv-request__field">
-                    <label htmlFor="proposal-request-description">Project Description</label>
+                    <label htmlFor="proposal-request-description">
+                      {language === "id" ? "Deskripsi Proyek" : "Project Description"}
+                    </label>
                     <textarea
                       id="proposal-request-description"
                       name="projectDescription"
                       minLength={20}
                       maxLength={1200}
                       rows={4}
-                      placeholder="Briefly describe what you need help with..."
+                      placeholder={
+                        language === "id"
+                          ? "Jelaskan secara singkat bantuan yang Anda perlukan..."
+                          : "Briefly describe what you need help with..."
+                      }
                       required
                     />
                   </div>
                 </>
               ) : (
                 <div className="cv-request__field">
-                  <label htmlFor={`${requestType}-request-need`}>Purpose</label>
+                  <label htmlFor={`${requestType}-request-need`}>
+                    {language === "id" ? "Tujuan" : "Purpose"}
+                  </label>
                   <select id={`${requestType}-request-need`} name="need" defaultValue="" required>
                     <option value="" disabled>
-                      Select your purpose
+                      {language === "id" ? "Pilih tujuan Anda" : "Select your purpose"}
                     </option>
                     {needOptions.map((option) => (
                       <option key={option} value={option}>
-                        {option}
+                        {language === "id"
+                          ? {
+                              "Hiring / Recruitment": "Perekrutan",
+                              "Project Collaboration / Freelance": "Kolaborasi Proyek / Freelance",
+                              "DevOps, Cloud, or CI/CD Consulting":
+                                "Konsultasi DevOps, Cloud, atau CI/CD",
+                              "Networking / Other": "Networking / Lainnya",
+                            }[option]
+                          : option}
                       </option>
                     ))}
                   </select>
@@ -285,8 +349,12 @@ export function ContactRequestDialog({
 
               <p className="cv-request__privacy">
                 {isProposal
-                  ? "Your information will only be used to review your project request and contact you."
-                  : "Your information will only be used to fulfill this request and follow up on the purpose you selected."}
+                  ? language === "id"
+                    ? "Informasi Anda hanya digunakan untuk meninjau proyek dan menghubungi Anda."
+                    : "Your information will only be used to review your project request and contact you."
+                  : language === "id"
+                    ? "Informasi Anda hanya digunakan untuk memenuhi permintaan ini dan menindaklanjuti tujuan yang dipilih."
+                    : "Your information will only be used to fulfill this request and follow up on the purpose you selected."}
               </p>
 
               <button
@@ -297,7 +365,7 @@ export function ContactRequestDialog({
                 {status === "submitting" ? (
                   <>
                     <LoaderCircle className="cv-request__spinner" aria-hidden="true" />
-                    Sending...
+                    {language === "id" ? "Mengirim..." : "Sending..."}
                   </>
                 ) : (
                   <>
