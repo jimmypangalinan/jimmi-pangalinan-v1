@@ -30,6 +30,13 @@ export interface ServiceItem {
   title: string;
   meta: string;
   body: string;
+  eyebrow?: string;
+  image?: string;
+  outcomes?: string[];
+  tools?: string[];
+  cta?: string;
+  featured?: boolean;
+  relatedWorkTitle?: string;
 }
 
 export interface WorkItem {
@@ -104,6 +111,8 @@ export interface PortfolioData {
 export const defaultPortfolioData: PortfolioData = ${JSON.stringify(data, null, 2)};
 
 const STORAGE_KEY = "portfolio_custom_data_v1";
+const STORAGE_VERSION_KEY = "portfolio_custom_data_version";
+const CURRENT_STORAGE_VERSION = 6;
 
 export function loadPortfolioData(): PortfolioData {
   if (typeof window === "undefined") {
@@ -113,9 +122,10 @@ export function loadPortfolioData(): PortfolioData {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultPortfolioData;
     const parsed = JSON.parse(raw) as Partial<PortfolioData>;
+    let mergedServices = parsed.services ?? defaultPortfolioData.services;
 
     // Deep merge works to preserve images & new fields from defaults if missing
-    const mergedWorks = (parsed.works ?? defaultPortfolioData.works).map((w, idx) => {
+    let mergedWorks = (parsed.works ?? defaultPortfolioData.works).map((w, idx) => {
       const def = defaultPortfolioData.works[idx] ?? {};
       return {
         ...def,
@@ -129,12 +139,43 @@ export function loadPortfolioData(): PortfolioData {
       };
     });
 
-    return {
+    const storedVersion = Number(localStorage.getItem(STORAGE_VERSION_KEY) ?? 1);
+    if (storedVersion < CURRENT_STORAGE_VERSION) {
+      mergedServices = defaultPortfolioData.services;
+      mergedWorks = mergedWorks.filter(
+        (work) => work.title !== "Jenkins Templating Engine pipeline",
+      );
+      const devSecOpsDefault = defaultPortfolioData.works.find(
+        (work) => work.title === "Enterprise DevSecOps CI/CD & GitOps Platform",
+      );
+      if (devSecOpsDefault?.image) {
+        mergedWorks = mergedWorks.map((work) =>
+          work.title === devSecOpsDefault.title
+            ? { ...work, image: devSecOpsDefault.image }
+            : work,
+        );
+      }
+      const storedTitles = new Set(mergedWorks.map((work) => work.title));
+      const newDefaultWorks = defaultPortfolioData.works.filter(
+        (work) => !storedTitles.has(work.title),
+      );
+      mergedWorks = [...mergedWorks, ...newDefaultWorks];
+    }
+
+    const mergedData = {
       ...defaultPortfolioData,
       ...parsed,
       profile: { ...defaultPortfolioData.profile, ...(parsed.profile ?? {}) },
+      services: mergedServices,
       works: mergedWorks,
     };
+
+    if (storedVersion < CURRENT_STORAGE_VERSION) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(mergedData));
+      localStorage.setItem(STORAGE_VERSION_KEY, String(CURRENT_STORAGE_VERSION));
+    }
+
+    return mergedData;
   } catch (e) {
     console.error("Failed to parse custom portfolio data:", e);
     return defaultPortfolioData;
@@ -145,6 +186,7 @@ export function savePortfolioData(data: PortfolioData): void {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    localStorage.setItem(STORAGE_VERSION_KEY, String(CURRENT_STORAGE_VERSION));
     window.dispatchEvent(new CustomEvent("portfolio-data-updated", { detail: data }));
   } catch (e) {
     console.error("Failed to save portfolio data:", e);
@@ -155,6 +197,7 @@ export function resetPortfolioData(): void {
   if (typeof window === "undefined") return;
   try {
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(STORAGE_VERSION_KEY);
     window.dispatchEvent(
       new CustomEvent("portfolio-data-updated", { detail: defaultPortfolioData }),
     );

@@ -1,6 +1,7 @@
 import {
   Activity,
   ArrowUpRight,
+  CheckCircle2,
   GitBranch,
   Cloud,
   ShieldCheck,
@@ -170,6 +171,8 @@ export function WorksSection() {
               ? `https://img.youtube.com/vi/${ytMatch[2]}/maxresdefault.jpg`
               : undefined;
           const thumbnail = work.image || ytThumb;
+          const visibleTags = work.tags.slice(0, 6);
+          const remainingTagCount = work.tags.length - visibleTags.length;
 
           return (
             <WorkDetailDialog key={work.title} work={work}>
@@ -233,9 +236,14 @@ export function WorksSection() {
                 </div>
 
                 <div className="work-card__tags" aria-label="Project technologies">
-                  {work.tags.map((tag) => (
+                  {visibleTags.map((tag) => (
                     <span key={tag}>{tag}</span>
                   ))}
+                  {remainingTagCount > 0 && (
+                    <span aria-label={`${remainingTagCount} additional technologies`}>
+                      +{remainingTagCount} Tools
+                    </span>
+                  )}
                 </div>
 
                 <div className="work-card__heading">
@@ -254,11 +262,9 @@ export function WorksSection() {
   );
 }
 
-const serviceIcons = [GitBranch, Cloud, ShieldCheck, Boxes];
-
 export function ServicesSection() {
   const { data } = usePortfolioData();
-  const services = data.services;
+  const { services, works } = data;
   const [activeSection, setActiveSection] = useState(serviceShortcuts[0].id);
   const showAll = activeSection === "services-all";
 
@@ -280,32 +286,69 @@ export function ServicesSection() {
         className={`section-tab-panel animate-rise${showAll ? " section-tab-panel--stack section-tab-panel--wide" : ""}`}
       >
         {(showAll || activeSection === "services-overview") && (
-          <div className="grid gap-4 sm:grid-cols-2">
-            {services.map((s, i) => {
-              const Icon = serviceIcons[i % serviceIcons.length]!;
+          <div className="service-solutions-grid">
+            {services.map((s) => {
+              const relatedWork = s.relatedWorkTitle
+                ? works.find((work) => work.title === s.relatedWorkTitle)
+                : undefined;
+
               return (
                 <article
                   key={s.title}
-                  className="flex flex-col rounded-3xl border border-border bg-surface p-6 shadow-sm"
+                  className={`service-solution-card${s.featured ? " is-featured" : ""}`}
                 >
-                  <div className="flex size-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                    <Icon className="size-5" />
+                  <div className="service-solution-card__visual">
+                    {s.image && <img src={s.image} alt="" loading="lazy" />}
+                    <span>{s.meta}</span>
                   </div>
-                  <p className="mt-4 font-mono text-[11px] uppercase tracking-wider text-primary">
-                    {s.meta}
-                  </p>
-                  <h3 className="mt-2 text-lg font-medium">{s.title}</h3>
-                  <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">
-                    {s.body}
-                  </p>
-                  <ContactRequestDialog requestType="proposal" service={s.title}>
-                    <button
-                      type="button"
-                      className="mt-6 inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-primary"
-                    >
-                      Request a Proposal <ArrowUpRight className="size-4" />
-                    </button>
-                  </ContactRequestDialog>
+
+                  <div className="service-solution-card__content">
+                    <p className="service-solution-card__eyebrow">{s.eyebrow ?? s.meta}</p>
+                    <h3>{s.title}</h3>
+                    <p className="service-solution-card__body">{s.body}</p>
+
+                    {s.outcomes && s.outcomes.length > 0 && (
+                      <ul
+                        className="service-solution-card__outcomes"
+                        aria-label="Solution outcomes"
+                      >
+                        {s.outcomes.map((outcome) => (
+                          <li key={outcome}>
+                            <CheckCircle2 aria-hidden="true" />
+                            <span>{outcome}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
+                    {s.tools && s.tools.length > 0 && (
+                      <div className="service-solution-card__tools">
+                        <small>Technology foundation</small>
+                        <div>
+                          {s.tools.map((tool) => (
+                            <span key={tool}>{tool}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="service-solution-card__actions">
+                      <ContactRequestDialog requestType="proposal" service={s.title}>
+                        <button type="button" className="service-solution-card__cta">
+                          <span>{s.cta ?? "Discuss Your Project"}</span>
+                          <ArrowUpRight aria-hidden="true" />
+                        </button>
+                      </ContactRequestDialog>
+
+                      {relatedWork && (
+                        <WorkDetailDialog work={relatedWork}>
+                          <button type="button" className="service-solution-card__case-study">
+                            View Case Study
+                          </button>
+                        </WorkDetailDialog>
+                      )}
+                    </div>
+                  </div>
                 </article>
               );
             })}
