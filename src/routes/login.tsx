@@ -34,9 +34,9 @@ import {
 import { createServerFn } from "@tanstack/react-start";
 import { useEffect, useState, type FormEvent } from "react";
 import { ThemeToggle } from "@/components/portfolio/ThemeToggle";
+import { generateFullPortfolioDataFileContent } from "@/lib/data-exporter";
 import {
   exportPortfolioDataCode,
-  generateFullPortfolioDataFileContent,
   type BlogPost,
   type CertificationItem,
   type ClientItem,

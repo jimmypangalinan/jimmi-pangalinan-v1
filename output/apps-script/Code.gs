@@ -1,5 +1,5 @@
 const OWNER_EMAIL = "pangalinan.jimmi@gmail.com";
-const CV_FILE_ID = "1ua8avstcLSnwym6ap1s8j03y4TkPi4Dz";
+const CV_FILE_ID = "1-CMM25sJV3FqEVzFqEMLn90ci3AfzDau";
 const RATE_LIMIT_SECONDS = 600;
 
 const ALLOWED_NEEDS = [
@@ -26,7 +26,9 @@ function doPost(e) {
 
     const requestType = String(form.requestType || "cv").trim();
     const name = String(form.name || "").trim();
-    const email = String(form.email || "").trim().toLowerCase();
+    const email = String(form.email || "")
+      .trim()
+      .toLowerCase();
     const phone = String(form.phone || "").trim();
     const need = String(form.need || "").trim();
 
@@ -81,11 +83,7 @@ function doPost(e) {
 }
 
 function testSendCv() {
-  sendCvEmail_(
-    "Jimmi Test",
-    OWNER_EMAIL,
-    "DevOps, Cloud, or CI/CD Consulting"
-  );
+  sendCvEmail_("Jimmi Test", OWNER_EMAIL, "DevOps, Cloud, or CI/CD Consulting");
 
   Logger.log("CV test email sent successfully.");
 }
@@ -95,7 +93,7 @@ function testCallRequest() {
     "Jimmi Test",
     OWNER_EMAIL,
     "+62 857 7823 3885",
-    "Project Collaboration / Freelance"
+    "Project Collaboration / Freelance",
   );
 
   Logger.log("Call request test email sent successfully.");
@@ -108,9 +106,7 @@ function sendCvEmail_(name, email, need) {
   const safeEmail = escapeHtml_(email);
   const safeNeed = escapeHtml_(need);
   const cvFile = DriveApp.getFileById(CV_FILE_ID);
-  const cvAttachment = cvFile
-    .getAs(MimeType.PDF)
-    .setName("CV-Jimmi-Pangalinan.pdf");
+  const cvAttachment = cvFile.getAs(MimeType.PDF).setName("CV-Jimmi-Pangalinan.pdf");
 
   const visitorText =
     "Hello " +
@@ -140,17 +136,12 @@ function sendCvEmail_(name, email, need) {
     </div>
   `;
 
-  MailApp.sendEmail(
-    email,
-    "CV — Jimmi Pangalinan, DevOps Engineer",
-    visitorText,
-    {
-      htmlBody: visitorHtml,
-      attachments: [cvAttachment],
-      name: "Jimmi Pangalinan",
-      replyTo: OWNER_EMAIL,
-    }
-  );
+  MailApp.sendEmail(email, "CV — Jimmi Pangalinan, DevOps Engineer", visitorText, {
+    htmlBody: visitorHtml,
+    attachments: [cvAttachment],
+    name: "Jimmi Pangalinan",
+    replyTo: OWNER_EMAIL,
+  });
 
   const ownerText =
     "A new CV request was received.\n\n" +
@@ -173,16 +164,11 @@ function sendCvEmail_(name, email, need) {
     </div>
   `;
 
-  MailApp.sendEmail(
-    OWNER_EMAIL,
-    "New CV request from " + name,
-    ownerText,
-    {
-      htmlBody: ownerHtml,
-      name: "Jimmi Pangalinan Portfolio",
-      replyTo: email,
-    }
-  );
+  MailApp.sendEmail(OWNER_EMAIL, "New CV request from " + name, ownerText, {
+    htmlBody: ownerHtml,
+    name: "Jimmi Pangalinan Portfolio",
+    replyTo: email,
+  });
 }
 
 function sendCallRequest_(name, email, phone, need) {
@@ -228,16 +214,11 @@ function sendCallRequest_(name, email, phone, need) {
     </div>
   `;
 
-  MailApp.sendEmail(
-    OWNER_EMAIL,
-    "New call request from " + name,
-    ownerText,
-    {
-      htmlBody: ownerHtml,
-      name: "Jimmi Pangalinan Portfolio",
-      replyTo: email,
-    }
-  );
+  MailApp.sendEmail(OWNER_EMAIL, "New call request from " + name, ownerText, {
+    htmlBody: ownerHtml,
+    name: "Jimmi Pangalinan Portfolio",
+    replyTo: email,
+  });
 }
 
 function isValidPhone_(phone) {
@@ -270,7 +251,7 @@ function assertQuota_(requiredRecipients) {
 function createRateKey_(requestType, email) {
   const digest = Utilities.computeDigest(
     Utilities.DigestAlgorithm.SHA_256,
-    requestType + ":" + email.toLowerCase()
+    requestType + ":" + email.toLowerCase(),
   );
 
   return "request_" + Utilities.base64EncodeWebSafe(digest).slice(0, 40);
@@ -286,7 +267,7 @@ function escapeHtml_(value) {
 }
 
 function jsonResponse_(data) {
-  return ContentService
-    .createTextOutput(JSON.stringify(data))
-    .setMimeType(ContentService.MimeType.JSON);
+  return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(
+    ContentService.MimeType.JSON,
+  );
 }
