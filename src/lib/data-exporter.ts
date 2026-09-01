@@ -112,7 +112,7 @@ export const defaultPortfolioData: PortfolioData = ${JSON.stringify(data, null, 
 
 const STORAGE_KEY = "portfolio_custom_data_v1";
 const STORAGE_VERSION_KEY = "portfolio_custom_data_version";
-const CURRENT_STORAGE_VERSION = 6;
+const CURRENT_STORAGE_VERSION = 7;
 
 export function loadPortfolioData(): PortfolioData {
   if (typeof window === "undefined") {
@@ -141,25 +141,10 @@ export function loadPortfolioData(): PortfolioData {
 
     const storedVersion = Number(localStorage.getItem(STORAGE_VERSION_KEY) ?? 1);
     if (storedVersion < CURRENT_STORAGE_VERSION) {
+      // Versioned content migrations use the checked-in collections as the source of truth.
+      // This removes stale cards that may still exist in localStorage from older releases.
       mergedServices = defaultPortfolioData.services;
-      mergedWorks = mergedWorks.filter(
-        (work) => work.title !== "Jenkins Templating Engine pipeline",
-      );
-      const devSecOpsDefault = defaultPortfolioData.works.find(
-        (work) => work.title === "Enterprise DevSecOps CI/CD & GitOps Platform",
-      );
-      if (devSecOpsDefault?.image) {
-        mergedWorks = mergedWorks.map((work) =>
-          work.title === devSecOpsDefault.title
-            ? { ...work, image: devSecOpsDefault.image }
-            : work,
-        );
-      }
-      const storedTitles = new Set(mergedWorks.map((work) => work.title));
-      const newDefaultWorks = defaultPortfolioData.works.filter(
-        (work) => !storedTitles.has(work.title),
-      );
-      mergedWorks = [...mergedWorks, ...newDefaultWorks];
+      mergedWorks = defaultPortfolioData.works;
     }
 
     const mergedData = {
