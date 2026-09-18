@@ -69,10 +69,18 @@
       .feature-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 13px; background: #f8e8ed; color: #8b2448; font-size: 21px; }
       .feature h3 { margin: 20px 0 8px; font-size: 17px; letter-spacing: -.02em; }
       .feature p { margin: 0; color: #706a6e; font-size: 13px; line-height: 1.6; }
-      .gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; gap: 20px; margin-top: 32px; }
-      .shot { min-width: 0; margin: 0; }
-      .shot img { display: block; width: 100%; border: 1px solid #e8e2e4; border-radius: 21px; background: #fff; box-shadow: 0 16px 34px #382a3014; }
-      .shot figcaption { margin-top: 11px; color: #6d666b; font-size: 13px; font-weight: 650; text-align: center; }
+      .gallery-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; }
+      .gallery-controls { display: flex; gap: 8px; flex: 0 0 auto; }
+      .gallery-controls button { display: grid; width: 42px; height: 42px; place-items: center; border: 1px solid #e1d7db; border-radius: 50%; background: #fff; color: #842447; font-size: 22px; cursor: pointer; }
+      .gallery-controls button:hover:not(:disabled) { border-color: #842447; background: #fff5f8; }
+      .gallery-controls button:disabled { color: #bdb4b8; cursor: default; }
+      .gallery-hint { margin: 10px 0 0; color: #797278; font-size: 13px; }
+      .gallery { display: flex; gap: 18px; overflow-x: auto; margin-top: 26px; padding: 3px 2px 28px; scroll-snap-type: x mandatory; scrollbar-width: thin; scrollbar-color: #d7c7cd transparent; overscroll-behavior-inline: contain; }
+      .shot { flex: 0 0 clamp(220px, 25vw, 264px); min-width: 0; margin: 0; scroll-snap-align: start; }
+      .shot a { display: block; border-radius: 21px; }
+      .shot img { display: block; width: 100%; height: auto; border: 1px solid #e8e2e4; border-radius: 21px; background: #fff; box-shadow: 0 12px 26px #382a3012; transition: transform .18s, box-shadow .18s; }
+      .shot a:hover img { transform: translateY(-3px); box-shadow: 0 18px 34px #382a3024; }
+      .shot figcaption { margin-top: 12px; color: #5d545a; font-size: 13px; font-weight: 700; text-align: center; }
       .install-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(250px, .8fr); gap: 32px; margin-top: 30px; }
       .steps { margin: 0; padding: 0; list-style: none; }
       .steps li { display: flex; gap: 17px; padding: 16px 0; border-bottom: 1px solid #eae4e6; }
@@ -115,11 +123,11 @@
         .section { padding: 56px 0; }
         .features, .install-grid { grid-template-columns: 1fr; }
         .feature { min-height: 0; }
-        .gallery { display: flex; overflow-x: auto; gap: 13px; scroll-snap-type: x mandatory; padding: 2px 3px 20px; }
-        .shot { min-width: 66%; scroll-snap-align: start; }
+        .gallery { gap: 13px; padding-bottom: 20px; }
+        .shot { flex-basis: min(70vw, 260px); }
         .closing { margin-bottom: 38px; }
       }
-      @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .download { transition: none; } }
+      @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .download, .shot img { transition: none; } }
     </style>
   </head>
   <body data-language="id">
@@ -161,7 +169,7 @@
             </div>
           </div>
           <div class="hero-art" aria-hidden="true">
-            <div class="phone"><img src="/arah/01-today.webp" alt="" width="1080" height="2160" fetchpriority="high" /></div>
+            <div class="phone"><img src="/arah/01-today.jpg" alt="" width="1080" height="2160" fetchpriority="high" /></div>
             <div class="float-card float-card--one"><strong>✓</strong><span class="lang-id">Progres terlihat</span><span class="lang-en">Progress at a glance</span></div>
             <div class="float-card float-card--two"><strong>↗</strong><span class="lang-id">Langkah lebih jelas</span><span class="lang-en">Clear next steps</span></div>
           </div>
@@ -181,11 +189,18 @@
 
         <section class="section" id="tampilan">
           <p class="section-label lang-id">Lihat aplikasinya</p><p class="section-label lang-en">A closer look</p>
-          <h2 class="lang-id">Sederhana untuk dipakai setiap hari.</h2><h2 class="lang-en">Simple enough for every day.</h2>
-          <div class="gallery">
-            <figure class="shot"><img src="/arah/01-today.webp" alt="Tampilan tugas Hari Ini di Arah Free" width="1080" height="2160" loading="lazy" /><figcaption class="lang-id">Tugas hari ini</figcaption><figcaption class="lang-en">Today's tasks</figcaption></figure>
-            <figure class="shot"><img src="/arah/03-lists.webp" alt="Tampilan daftar tugas di Arah Free" width="1080" height="2160" loading="lazy" /><figcaption class="lang-id">Daftar dan progres</figcaption><figcaption class="lang-en">Lists and progress</figcaption></figure>
-            <figure class="shot"><img src="/arah/05-goal-detail.webp" alt="Tampilan rincian rencana di Arah Free" width="1080" height="2160" loading="lazy" /><figcaption class="lang-id">Rincian rencana</figcaption><figcaption class="lang-en">Plan details</figcaption></figure>
+          <div class="gallery-heading">
+            <div><h2 class="lang-id">Lihat Arah Free dari dekat.</h2><h2 class="lang-en">Explore Arah Free up close.</h2><p class="gallery-hint lang-id">Geser untuk melihat semua tampilan. Ketuk gambar untuk memperbesar.</p><p class="gallery-hint lang-en">Swipe to see every screen. Tap an image to enlarge it.</p></div>
+            <div class="gallery-controls"><button type="button" data-gallery-prev aria-label="Gambar sebelumnya / Previous screenshot" disabled>←</button><button type="button" data-gallery-next aria-label="Gambar berikutnya / Next screenshot">→</button></div>
+          </div>
+          <div class="gallery" id="arah-gallery" role="region" aria-label="Tampilan aplikasi Arah Free / Arah Free screenshots" tabindex="0">
+            <figure class="shot"><a href="/arah/01-today.jpg" target="_blank" rel="noopener" aria-label="Buka tampilan Hari Ini / Open Today screen"><img src="/arah/01-today.jpg" alt="Arah Free: tugas dan progres Hari Ini" width="1080" height="2160" loading="lazy" /></a><figcaption><span class="lang-id">Hari Ini</span><span class="lang-en">Today</span></figcaption></figure>
+            <figure class="shot"><a href="/arah/02-planned.jpg" target="_blank" rel="noopener" aria-label="Buka tampilan Terencana / Open Planned screen"><img src="/arah/02-planned.jpg" alt="Arah Free: daftar tugas terencana" width="1080" height="2160" loading="lazy" /></a><figcaption><span class="lang-id">Terencana</span><span class="lang-en">Planned</span></figcaption></figure>
+            <figure class="shot"><a href="/arah/03-lists.jpg" target="_blank" rel="noopener" aria-label="Buka tampilan Daftar / Open Lists screen"><img src="/arah/03-lists.jpg" alt="Arah Free: daftar tujuan dan progres" width="1080" height="2160" loading="lazy" /></a><figcaption><span class="lang-id">Daftar</span><span class="lang-en">Lists</span></figcaption></figure>
+            <figure class="shot"><a href="/arah/04-timeline.jpg" target="_blank" rel="noopener" aria-label="Buka tampilan Linimasa / Open Timeline screen"><img src="/arah/04-timeline.jpg" alt="Arah Free: linimasa tujuan" width="1080" height="2160" loading="lazy" /></a><figcaption><span class="lang-id">Linimasa</span><span class="lang-en">Timeline</span></figcaption></figure>
+            <figure class="shot"><a href="/arah/05-goal-detail.jpg" target="_blank" rel="noopener" aria-label="Buka rincian tujuan / Open Goal details"><img src="/arah/05-goal-detail.jpg" alt="Arah Free: tugas dalam rincian tujuan" width="1080" height="2160" loading="lazy" /></a><figcaption><span class="lang-id">Rincian tujuan</span><span class="lang-en">Goal details</span></figcaption></figure>
+            <figure class="shot"><a href="/arah/06-analysis.jpg" target="_blank" rel="noopener" aria-label="Buka tampilan Analisis / Open Analysis screen"><img src="/arah/06-analysis.jpg" alt="Arah Free: analisis progres dan kesiapan rencana" width="1080" height="2160" loading="lazy" /></a><figcaption><span class="lang-id">Analisis</span><span class="lang-en">Analysis</span></figcaption></figure>
+            <figure class="shot"><a href="/arah/07-milestones.jpg" target="_blank" rel="noopener" aria-label="Buka tampilan Jadwal / Open Schedule screen"><img src="/arah/07-milestones.jpg" alt="Arah Free: jadwal tahap dan tenggat tujuan" width="1080" height="2160" loading="lazy" /></a><figcaption><span class="lang-id">Jadwal</span><span class="lang-en">Schedule</span></figcaption></figure>
           </div>
         </section>
 
@@ -242,6 +257,23 @@
         try { saved = localStorage.getItem(key) || "id"; } catch (_) { /* Keep Indonesian. */ }
         setLanguage(saved);
         buttons.forEach((button) => button.addEventListener("click", () => setLanguage(button.dataset.setLanguage)));
+        const gallery = document.querySelector("#arah-gallery");
+        const previous = document.querySelector("[data-gallery-prev]");
+        const next = document.querySelector("[data-gallery-next]");
+        const updateGalleryControls = () => {
+          previous.disabled = gallery.scrollLeft <= 2;
+          next.disabled = gallery.scrollLeft + gallery.clientWidth >= gallery.scrollWidth - 2;
+        };
+        const moveGallery = (direction) => {
+          const shot = gallery.querySelector(".shot");
+          const gap = parseFloat(getComputedStyle(gallery).gap) || 0;
+          gallery.scrollBy({ left: direction * (shot.getBoundingClientRect().width + gap), behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+        };
+        previous.addEventListener("click", () => moveGallery(-1));
+        next.addEventListener("click", () => moveGallery(1));
+        gallery.addEventListener("scroll", updateGalleryControls, { passive: true });
+        window.addEventListener("resize", updateGalleryControls);
+        updateGalleryControls();
       })();
     </script>
   </body>
